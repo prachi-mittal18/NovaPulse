@@ -2,7 +2,7 @@ import React from "react";
 
 function CreateTicket() {
   return (
-    <div className="container">
+    <div className="container ao-support-section">
       <div className="row p-5 mt-5 mb-5">
         <h1 className="fs-2 ">To create a ticket, select a relevant topic</h1>
 
@@ -25,12 +25,12 @@ function CreateTicket() {
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
-            Charges at Zerodha
+            Charges at ArthaOdha
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
            
-            Zerodha IDFC FIRST Bank 3-in-1 Account
+            ArthaOdha IDFC FIRST Bank 3-in-1 Account
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
@@ -41,7 +41,7 @@ function CreateTicket() {
 
         <div className="col-4 p-5 mb-5 mt-5">
           
-          <h4 className="mb-4">Your Zerodha Account</h4>
+          <h4 className="mb-4">Your ArthaOdha Account</h4>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
             Login Credentials
@@ -68,9 +68,9 @@ function CreateTicket() {
 
         <div className="col-4 p-5 mb-5 mt-5">
           
-          <h4 className="mb-5">Your Zerodha Account</h4>
+          <h4 className="mb-5">Your ArthaOdha Account</h4>
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
-            OMargin/leverage, Product and order types
+            Margin/leverage, Product and order types
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>

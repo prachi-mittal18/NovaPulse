@@ -2,11 +2,11 @@ import React from "react";
 
 function Hero() {
   return (
-    <div className="container mb-5 border-bottom">
-      <div className="row text-center mt-5 p-5 mb-5">
-        <h1 className="fs-3 ">Zerodha Products</h1>
-        <h3 className="text-muted mt-2 fs-4">Sleek, modern, and intuitive trading platforms</h3>
-        <p className="text-muted mt-3  ">Check out our <a href="" style={{textDecoration:"none"}}>investment offerings</a> <i class="fa fa-long-arrow-right" aria-hidden="true"></i>  </p>
+    <div className="container">
+      <div className="row text-center mt-5 p-5 mb-3 border-bottom">
+        <h1 className="display-5" style={{ fontWeight: 800 }}>ArthaOdha Products</h1>
+        <h3 className="h4 mt-2 text-muted" style={{ fontWeight: 500 }}>Sleek, modern, and intuitive trading platforms</h3>
+        <p className="mt-3">Check out our <a href="" className="fw-bold">investment offerings →</a></p>
       </div>
     </div>
   );

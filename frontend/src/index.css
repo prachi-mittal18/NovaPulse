@@ -1,51 +1,390 @@
+/* ==========================================
+   ArthaOdha — Light Design System (Frontend)
+   ========================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* === CSS Variables === */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-glass: rgba(255, 255, 255, 0.8);
+  --bg-navbar: rgba(255, 255, 255, 0.9);
+
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-heading: #0f172a;
+
+  --accent-primary: #6366f1;
+  --accent-primary-light: #818cf8;
+  --accent-secondary: #4f46e5;
+  --accent-gradient: linear-gradient(135deg, #6366f1, #818cf8, #94a3b8);
+  --accent-glow: 0 0 20px rgba(99, 102, 241, 0.1);
+
+  --profit: #10b981;
+  --profit-bg: rgba(16, 185, 129, 0.1);
+  --loss: #ef4444;
+  --loss-bg: rgba(239, 68, 68, 0.1);
+
+  --border: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --glass-blur: blur(8px);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --transition: all 0.2s ease-in-out;
+}
+
+/* === Reset & Base === */
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.nav-link{
-  margin-left: 40px;
+/* === Override Bootstrap for light theme === */
+.bg-body-tertiary {
+  background-color: var(--bg-navbar) !important;
 }
-.footer-link{
+
+.border-bottom {
+  border-bottom-color: var(--border) !important;
+}
+
+.text-muted {
+  color: var(--text-secondary) !important;
+}
+
+.container {
+  max-width: 1200px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-heading);
+  font-weight: 700;
+}
+
+p {
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--accent-primary);
   text-decoration: none;
-  color: gray;
-  margin-bottom: 10%;
-  font-size: medium;
+  transition: var(--transition);
 }
 
-#supportHero{
-background-color: rgb(56,126,209);
-color: white;
+a:hover {
+  color: var(--accent-secondary);
 }
-#supportWrapper{
+
+/* === Navbar === */
+.ao-navbar {
+  background: var(--bg-navbar) !important;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--border) !important;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0.75rem 0;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.ao-navbar .navbar-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  color: transparent !important;
+}
+
+.ao-navbar .navbar-brand .brand-mark {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.ao-navbar .nav-link {
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-left: 32px;
+  padding: 0.5rem 0 !important;
+  position: relative;
+  transition: var(--transition);
+}
+
+.ao-navbar .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent-gradient);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.ao-navbar .nav-link:hover {
+  color: var(--text-heading) !important;
+}
+
+.ao-navbar .nav-link:hover::after {
+  width: 100%;
+}
+
+.ao-navbar .nav-link.active {
+  color: var(--accent-primary) !important;
+}
+
+/* === Hero Section === */
+.ao-hero {
+  min-height: 70vh;
   display: flex;
-  justify-content: space-between;
-  margin: 0 150px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 4rem 1rem;
+  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 70%),
+              var(--bg-primary);
 }
 
-#supportHero a{
+.ao-hero h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: var(--text-heading);
+}
+
+.ao-hero h1 .gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ao-hero .hero-subtitle {
+  font-size: 1.2rem;
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+}
+
+.hero-cta {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: var(--radius-xl);
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
+  color: #fff;
+}
+
+/* === Glass Card === */
+.ao-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.ao-card:hover {
+  border-color: var(--accent-primary-light);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* === Stats Section === */
+.ao-stats {
+  padding: 5rem 0;
+  background: var(--bg-secondary);
+}
+
+.ao-stats h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-heading);
+}
+
+.ao-stats p {
+  color: var(--text-secondary);
+}
+
+/* === Pricing Section === */
+.ao-pricing {
+  padding: 5rem 0;
+}
+
+.ao-pricing-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+
+.ao-pricing-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-6px);
+}
+
+.ao-pricing-card .price {
+  font-size: 3rem;
+  font-weight: 900;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* === Education Section === */
+.ao-education {
+  padding: 5rem 0;
+  background: var(--bg-secondary);
+}
+
+/* === Open Account / CTA Section === */
+.ao-cta-section {
+  padding: 6rem 0;
+  text-align: center;
+}
+
+.ao-cta-section .hero-cta {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  padding: 14px 40px;
+  border-radius: var(--radius-xl);
+  font-size: 1.05rem;
+  font-weight: 600;
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+}
+
+/* === Footer === */
+.ao-footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 4rem 0 2rem;
+}
+
+.ao-footer .footer-brand {
+  font-size: 1.5rem;
+  font-weight: 800;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  color: transparent !important;
+}
+
+.ao-footer .footer-brand .brand-mark {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.footer-link {
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.footer-link:hover {
+  color: var(--accent-primary);
+  padding-left: 4px;
+}
+
+.ao-footer .footer-legal {
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* === Support === */
+#supportHero {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
   color: white;
 }
-#supportHero input{
-  padding: 20px 40px;
-  width: 100%;
-  font-size: 15px;
-  border-radius: 7px;
-  border: none;
-}
-#supportRow2 {
-  line-height: 25px;
 
+#supportHero input {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
 }
-#supportRow2 a{
-margin-right: 15px;
+
+#supportHero input::placeholder {
+  color: var(--text-muted);
+}
+
+/* === Products === */
+.ao-products-hero h1 {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ao-universe .partner-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* === Team === */
+.ao-team img {
+  border: 3px solid var(--border);
+}
+
+.ao-team img:hover {
+  border-color: var(--accent-primary);
+}
+
+/* === Bootstrap Overrides === */
+.btn-primary {
+  background: var(--accent-gradient) !important;
+  border: none !important;
+  border-radius: var(--radius-xl) !important;
 }

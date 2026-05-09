@@ -2,35 +2,45 @@ import React from 'react';
 
 function Stats() {
     return (  
-       <div className='container p-2 '>
-        <div className='row p-5'>
+       <div className='ao-stats'>
+        <div className='container'>
+            <div className='row align-items-center'>
+                <div className='col-lg-6 p-4'>
+                    <h1 className='display-6 mb-5' style={{ fontWeight: 800 }}>Trust with confidence</h1>
 
-            <div className='col-6 p-5'>
-                <h1 className='fs-2 mb-5'>Trust with confidence</h1>
+                    <h2>Customer-first always</h2>
+                    <p>That's why 1.6+ crore customers trust ArthaOdha with ~ ₹6 lakh crores of equity investments, making us India's largest broker; contributing to 15% of daily retail exchange volumes in India.</p>
+                    
+                    <h2>No spam or gimmicks</h2>
+                    <p>No gimmicks, spam, "gamification", or annoying push notifications. High quality apps that you use at your pace, the way you like. <a href=''>Our philosophies.</a> </p>
 
-                <h2 className='fs-4'>Customer-first always</h2>
-                <p className='text-muted'>That's why 1.6+ crore customers trust Zerodha with ~ ₹6 lakh crores of equity investments, making us India’s largest broker; contributing to 15% of daily retail exchange volumes in India.</p>
-                
-                <h2 className='fs-4'>No spam or gimmicks</h2>
-                <p className='text-muted'>No gimmicks, spam, "gamification", or annoying push notifications. High quality apps that you use at your pace, the way you like. <a href=''style={{textDecoration: "none"}}>Our philosophies.</a> </p>
-
-                <h2 className='fs-4'>The Zerodha universe</h2>
-                <p className='text-muted'>Not just an app, but a whole ecosystem. Our investments in 30+ fintech startups offer you tailored services specific to your needs.</p>
-               
-                <h2 className='fs-4'>Do better with money</h2>
-                <p className='text-muted'>With initiatives like Nudge and Kill Switch, we don't just facilitate transactions, but actively help you do better with your money.</p>
-            </div>
-             <div className='col-6 p-5'>
-                <img src='\media\ecosystem.png' style={{width:"90%"}}/>
-                <div className='text-center'>
-                    <a href='' className='mx-5' style={{textDecoration: "none"}}>Explore our products <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
-                    <a href='' style={{textDecoration: "none"}}>Try Kite demo <i class="fa fa-long-arrow-right" aria-hidden="true"></i> </a>
+                    <h2>The ArthaOdha universe</h2>
+                    <p>Not just an app, but a whole ecosystem. Our investments in 30+ fintech startups offer you tailored services specific to your needs.</p>
                 </div>
-             </div>
-                <img src='\media\pressLogos.png' className='mx-auto row mb-5' style={{maxWidth:"70%"  }}/>
+                <div className='col-lg-6 p-4'>
+                    <div className='ao-card text-center' style={{ background: '#fff' }}>
+                        <div className='row'>
+                            <div className='col-12 mb-4'>
+                                <p style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--accent-primary)', marginBottom: '0.5rem' }}>30+</p>
+                                <p style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Fintech Partners</p>
+                            </div>
+                            <div className='col-6 border-end'>
+                                <p style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--profit)', marginBottom: '0.5rem' }}>15%</p>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Daily Retail Volume</p>
+                            </div>
+                            <div className='col-6'>
+                                <p style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent-primary-light)', marginBottom: '0.5rem' }}>₹6L Cr</p>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Equity Investments</p>
+                            </div>
+                        </div>
+                        <div className='mt-5 d-flex justify-content-center gap-4'>
+                            <a href='' className='fw-bold'>Explore products →</a>
+                            <a href='' className='fw-bold'>Try demo →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
-
        </div>
     );
 }

@@ -17,7 +17,11 @@ const Menu = () => {
 
   return (
     <div className="menu-container">
-      <img src="logo.png" style={{ width: "50px" }} />
+      <Link to="/" style={{ textDecoration: "none" }} onClick={() => handleMenuClick(0)}>
+        <span className="logo-text">
+          Artha<span className="brand-mark">Odha</span>
+        </span>
+      </Link>
       <div className="menus">
         <ul>
           <li>
@@ -89,7 +93,7 @@ const Menu = () => {
         </ul>
         <hr />
         <div className="profile" onClick={handleProfileClick}>
-          <div className="avatar">ZU</div>
+          <div className="avatar">AO</div>
           <p className="username">UserID</p>
         </div>
        

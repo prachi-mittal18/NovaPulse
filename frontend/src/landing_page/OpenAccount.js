@@ -2,14 +2,12 @@ import React from 'react';
 
 function OpenAccount() {
     return (
-         <div className='container p-5 mb-5'>
-            <div className='row text-center'>
-                
-                <h2 className='mt-5'>Open a Zerodha account</h2>
+         <div className='ao-cta-section'>
+            <div className='container'>
+                <h2>Open an ArthaOdha account</h2>
                 <p>Modern platforms and apps, ₹0 investments, and flat ₹20 intraday and F&O trades.</p>
-                <button className='p-2 btn btn-primary fs-5 mb-5' style={{width:"20%" , margin:"0 auto", backgroundColor:"#457aba"}}>Sign up for free</button>
+                <button className='hero-cta' onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>Sign up for free</button>
             </div>
-            
         </div>
     );
 }

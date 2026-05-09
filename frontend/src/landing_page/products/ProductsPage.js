@@ -24,7 +24,7 @@ function ProductsPage() {
       <RightImageSection
         imageURL="\media\console.png"
         productName="Console"
-        productDescription="The central dashboard for your Zerodha account. Gain insights into your trades and investments with in-depth reports and visualisations."
+        productDescription="The central dashboard for your ArthaOdha account. Gain insights into your trades and investments with in-depth reports and visualisations."
         learnMore=""
       />
 
@@ -55,8 +55,8 @@ function ProductsPage() {
         googlePlay=""
         appStore=""
       />
-      <p className="text-center">
-        Want to know more about our technology stack? Check out the <a href="" style={{textDecoration:"none"}}>Zerodha.tech </a>blog.
+      <p className="text-center" style={{ color: '#9a9ab0' }}>
+        Want to know more about our technology stack? Check out the <a href="">ArthaOdha.tech </a>blog.
       </p>
 
       <Universe />
