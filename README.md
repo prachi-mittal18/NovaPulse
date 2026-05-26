@@ -1,6 +1,6 @@
 # ArthaOdha — Modern Trading & Investment Platform
 
-![ArthaOdha Logo](https://via.placeholder.com/800x200?text=ArthaOdha+Trading+Platform)
+
 
 ArthaOdha is a comprehensive, full-stack financial trading platform inspired by Zerodha. Originally started as a clone, it has been evolved into a unique brand identity featuring a premium light-themed design system, optimized performance, and a streamlined user experience.
 

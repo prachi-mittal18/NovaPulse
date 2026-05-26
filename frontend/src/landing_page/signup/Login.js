@@ -4,14 +4,13 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
-const Signup = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
-    username: "",
   });
-  const { email, password, username } = inputValue;
+  const { email, password } = inputValue;
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setInputValue({
@@ -26,25 +25,26 @@ const Signup = () => {
     });
   const handleSuccess = (msg) =>
     toast.success(msg, {
-      position: "bottom-right",
+      position: "bottom-left",
     });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:3002/signup",
+        "http://localhost:3002/login",
         {
           ...inputValue,
         },
         { withCredentials: true }
       );
+      console.log(data);
       const { success, message } = data;
       if (success) {
         handleSuccess(message);
         setTimeout(() => {
-          navigate("/");
-        }, 2000);
+          window.location.href = "http://localhost:3000"; // Go to dashboard
+        }, 1000);
       } else {
         handleError(message);
       }
@@ -55,7 +55,6 @@ const Signup = () => {
       ...inputValue,
       email: "",
       password: "",
-      username: "",
     });
   };
 
@@ -64,7 +63,7 @@ const Signup = () => {
         <div className='row justify-content-center'>
             <div className='col-lg-5 col-md-8'>
                 <div className='ao-card p-5' style={{ background: '#fff' }}>
-                    <h1 className='display-6 text-center mb-4' style={{ fontWeight: 800 }}>Signup now</h1>
+                    <h1 className='display-6 text-center mb-4' style={{ fontWeight: 800 }}>Login to ArthaOdha</h1>
                     <form onSubmit={handleSubmit}>
                         <div className='mb-4'>
                             <label htmlFor="email" className="form-label">Email address</label>
@@ -73,18 +72,6 @@ const Signup = () => {
                                 name="email"
                                 value={email}
                                 placeholder="Enter your email"
-                                onChange={handleOnChange}
-                                className="form-control"
-                                required
-                            />
-                        </div>
-                        <div className='mb-4'>
-                            <label htmlFor="username" className="form-label">Username</label>
-                            <input
-                                type="text"
-                                name="username"
-                                value={username}
-                                placeholder="Enter your username"
                                 onChange={handleOnChange}
                                 className="form-control"
                                 required
@@ -104,7 +91,7 @@ const Signup = () => {
                         </div>
                         <button type="submit" className="hero-cta w-100 mt-3">Submit</button>
                         <p className="mt-4 text-center text-muted small">
-                            Already have an account? <Link to="/login">Login</Link>
+                            Don't have an account? <Link to="/signup">Signup</Link>
                         </p>
                     </form>
                     <ToastContainer />
@@ -115,4 +102,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default Login;

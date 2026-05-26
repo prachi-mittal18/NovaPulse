@@ -5,6 +5,7 @@ import './index.css';
 import HomePage from './landing_page/home/HomePage';
 import AboutPage from './landing_page/about/AboutPage';
 import Signup from './landing_page/signup/Signup';
+import Login from './landing_page/signup/Login';
 import ProductPage from './landing_page/products/ProductsPage';
 import PricingPage from './landing_page/pricing/PricingPage';
 import SupportPage from './landing_page/support/SupportPage';
@@ -21,6 +22,7 @@ root.render(
   <Routes>
     <Route path = "/" element={<HomePage/>}></Route>
     <Route path = "/signup" element={<Signup/>}></Route>
+    <Route path = "/login" element={<Login/>}></Route>
     <Route path = "/about" element={<AboutPage/>}></Route>
     <Route path = "/product" element={<ProductPage/>}></Route>
     <Route path = "/pricing" element={<PricingPage/>}></Route>

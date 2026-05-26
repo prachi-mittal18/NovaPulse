@@ -11,7 +11,19 @@ const PORT = process.env.PORT || 3002;
 const url = process.env.MONGO_URL;
 
 const app = express();
-app.use(cors());
+const cookieParser = require("cookie-parser");
+const authRoute = require("./Routes/AuthRoute");
+
+app.use(cors({
+  origin: ["http://localhost:3000", "http://localhost:3001"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
+
+app.use(cookieParser());
+app.use(express.json());
+
+app.use("/", authRoute);
 app.use(bodyParser.json());
 
 // app.get("/addHoldings" , async(req,res)=>{

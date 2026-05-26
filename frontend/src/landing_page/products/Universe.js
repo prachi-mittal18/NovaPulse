@@ -23,7 +23,7 @@ function Universe() {
           </div>
           <div className="col-lg-4 col-md-6">
             <div className="ao-card h-100">
-              <img src="\media\zerodhaFundhouse.png" className="mb-4" height="45" alt="Fundhouse" />
+              <img src="\media\arthaodhaFundhouse.png" className="mb-4" height="45" alt="Fundhouse" />
               <p className="small text-muted">
                 Our asset management venture that is creating simple and transparent
                 index funds to help you save for your goals.
