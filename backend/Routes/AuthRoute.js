@@ -5,7 +5,7 @@ const router = require("express").Router();
 router.post("/signup", Signup);
 router.post("/login", Login);
 router.post("/verify", userVerification, (req, res) => {
-  res.status(200).json({ status: true, user: req.user.username, balance: req.user.balance });
+  res.status(200).json({ status: true, user: req.user.username, email: req.user.email, balance: req.user.balance });
 });
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {

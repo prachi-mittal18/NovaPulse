@@ -14,5 +14,5 @@ const PositionsSchema = new Schema({
   day: String,
   isLoss: Boolean,
   price: Number,
-});
+}, { timestamps: true });
 module.exports = { PositionsSchema };

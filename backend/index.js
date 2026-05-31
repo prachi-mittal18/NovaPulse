@@ -226,8 +226,29 @@ app.get("/allPositions", userVerification, async (req, res) => {
 });
 
 app.get("/allOrders", userVerification, async (req, res) => {
-  const allOrders = await OrdersModel.find({ user: req.user.id });
+  // Sort by createdAt in descending order (-1) to show newest orders first
+  const allOrders = await OrdersModel.find({ user: req.user.id }).sort({ createdAt: -1 });
   return res.status(200).json(allOrders);
+});
+
+app.get("/user/funds", userVerification, async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.user.id);
+    const allHoldings = await HoldingsModel.find({ user: req.user.id });
+
+    // Calculate total investment (Margin Used) using safe financial math
+    const marginUsedCents = allHoldings.reduce((acc, holding) => {
+      return acc + (holding.qty * toCents(holding.avg));
+    }, 0);
+
+    return res.status(200).json({
+      balance: user.balance,
+      marginUsed: fromCents(marginUsedCents),
+      openingBalance: user.openingBalance || user.balance,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching funds summary", success: false });
+  }
 });
 
 // Helper functions for safe financial math using scaled integers (cents/paise)
@@ -241,12 +262,19 @@ app.post("/newOrder", userVerification, async (req, res) => {
     const qty = Number(req.body.qty);
     const priceCents = toCents(req.body.price);
     const orderValueCents = qty * priceCents;
-    const orderValue = fromCents(orderValueCents);
 
     const userBalanceCents = toCents(user.balance);
+    const marketPrice = currentPrices[req.body.name] || req.body.price;
+    
+    let orderStatus = "COMPLETE";
 
-    if (req.body.mode === "BUY" && userBalanceCents < orderValueCents) {
-      return res.status(400).json({ message: "Insufficient funds", success: false });
+    // Price validation for Limit Orders
+    if (req.body.orderType === "LIMIT") {
+      if (req.body.mode === "BUY" && marketPrice > req.body.price) {
+        orderStatus = "PENDING";
+      } else if (req.body.mode === "SELL" && marketPrice < req.body.price) {
+        orderStatus = "PENDING";
+      }
     }
 
     const newOrder = new OrdersModel({
@@ -254,13 +282,30 @@ app.post("/newOrder", userVerification, async (req, res) => {
       qty: req.body.qty,
       mode: req.body.mode,
       price: req.body.price,
+      orderType: req.body.orderType || "MARKET",
+      status: orderStatus,
       user: req.user.id, // Associate the order with the person who placed it
     });
 
-    await newOrder.save();
+    // Validation check for BUY: Insufficient Funds
+    if (req.body.mode === "BUY" && userBalanceCents < orderValueCents) {
+      newOrder.status = "REJECTED";
+      await newOrder.save();
+      return res.status(400).json({ message: "Insufficient funds", success: false });
+    }
+
+    if (orderStatus === "PENDING") {
+      await newOrder.save();
+      return res.status(201).json({ 
+        message: "Limit order placed. Status: PENDING", 
+        success: true 
+      });
+    }
 
     // Logic to update Holdings based on the order
     if (req.body.mode === "BUY") {
+      await newOrder.save(); // Saves as COMPLETE
+
       const existingHolding = await HoldingsModel.findOne({ 
         user: req.user.id, 
         name: req.body.name 
@@ -298,8 +343,12 @@ app.post("/newOrder", userVerification, async (req, res) => {
       });
 
       if (!existingHolding || existingHolding.qty < qty) {
+        newOrder.status = "REJECTED";
+        await newOrder.save();
         return res.status(400).json({ message: "Insufficient quantity to sell", success: false });
       }
+
+      await newOrder.save(); // Saves as COMPLETE
 
       // Safely add balance in cents
       user.balance = fromCents(userBalanceCents + orderValueCents);
@@ -323,16 +372,112 @@ app.post("/newOrder", userVerification, async (req, res) => {
 });
 
 // Simulated Live Price Ticker
+let currentPrices = {
+  "NIFTY 50": 18000.45,
+  "SENSEX": 60000.85,
+  "INFY": 1500.20,
+  "TCS": 3200.50,
+  "RELIANCE": 2500.10,
+  "BHARTIARTL": 540.60,
+  "HDFCBANK": 1520.30,
+  "ITC": 205.15,
+  "TATAPOWER": 120.40,
+  "WIPRO": 570.80,
+  "M&M": 779.80,
+  "HUL": 2417.40,
+  "HINDUNILVR": 2417.40,
+  "SBIN": 430.20,
+  "KPITTECH": 266.45,
+  "QUICKHEAL": 160.00,
+  "ONGC": 116.80,
+};
+
+const processPendingOrders = async () => {
+  try {
+    const pendingOrders = await OrdersModel.find({ status: "PENDING" });
+
+    for (const order of pendingOrders) {
+      const currentPrice = currentPrices[order.name];
+      if (!currentPrice) continue;
+
+      let shouldExecute = false;
+      if (order.mode === "BUY" && currentPrice <= order.price) {
+        shouldExecute = true;
+      } else if (order.mode === "SELL" && currentPrice >= order.price) {
+        shouldExecute = true;
+      }
+
+      if (shouldExecute) {
+        const user = await UserModel.findById(order.user);
+        const priceCents = toCents(currentPrice);
+        const orderValueCents = order.qty * priceCents;
+        const userBalanceCents = toCents(user.balance);
+
+        if (order.mode === "BUY") {
+          if (userBalanceCents < orderValueCents) {
+            order.status = "REJECTED"; // Funds might have been spent elsewhere while pending
+            await order.save();
+            continue;
+          }
+
+          user.balance = fromCents(userBalanceCents - orderValueCents);
+          await user.save();
+
+          const existingHolding = await HoldingsModel.findOne({ user: order.user, name: order.name });
+          if (existingHolding) {
+            const totalQty = existingHolding.qty + order.qty;
+            const newAvgCents = Math.round(((existingHolding.qty * toCents(existingHolding.avg)) + (order.qty * priceCents)) / totalQty);
+            existingHolding.qty = totalQty;
+            existingHolding.avg = fromCents(newAvgCents);
+            await existingHolding.save();
+          } else {
+            await HoldingsModel.create({ name: order.name, qty: order.qty, avg: currentPrice, price: currentPrice, user: order.user });
+          }
+        } else if (order.mode === "SELL") {
+          const existingHolding = await HoldingsModel.findOne({ user: order.user, name: order.name });
+          if (!existingHolding || existingHolding.qty < order.qty) {
+            order.status = "REJECTED";
+            await order.save();
+            continue;
+          }
+
+          user.balance = fromCents(userBalanceCents + orderValueCents);
+          await user.save();
+
+          if (existingHolding.qty === order.qty) {
+            await HoldingsModel.deleteOne({ _id: existingHolding._id });
+          } else {
+            existingHolding.qty -= order.qty;
+            await existingHolding.save();
+          }
+        }
+
+        order.status = "COMPLETE";
+        order.price = currentPrice; // Update to actual execution price
+        await order.save();
+        console.log(`Executed Pending Order: ${order.mode} ${order.name} at ${currentPrice}`);
+      }
+    }
+  } catch (err) {
+    console.error("Error processing pending orders:", err);
+  }
+};
+
 setInterval(() => {
-  const priceUpdate = {
-    "NIFTY 50": (18000 + Math.random() * 100).toFixed(2),
-    "SENSEX": (60000 + Math.random() * 200).toFixed(2),
-    "INFY": (1500 + Math.random() * 10).toFixed(2),
-    "TCS": (3200 + Math.random() * 15).toFixed(2),
-    "RELIANCE": (2500 + Math.random() * 5).toFixed(2),
-  };
-  io.emit("priceUpdate", priceUpdate);
-}, 2000); // Send updates every 2 seconds
+  Object.keys(currentPrices).forEach((ticker) => {
+    // Max 0.1% change per tick to simulate realistic market "noise"
+    const volatility = 0.001; 
+    const change = (Math.random() * volatility) - (volatility / 2);
+    
+    // Update the persistent server state
+    const newPrice = currentPrices[ticker] * (1 + change);
+    currentPrices[ticker] = Number(newPrice.toFixed(2));
+  });
+
+  processPendingOrders();
+  // Emit the updated stateful prices to all connected clients
+  io.emit("priceUpdate", currentPrices);
+}, 2000);
 
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);

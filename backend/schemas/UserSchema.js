@@ -23,6 +23,10 @@ const UserSchema = new Schema({
     type: Number,
     default: 100000,
   },
+  openingBalance: {
+    type: Number,
+    default: 100000,
+  },
 });
 
 UserSchema.pre("save", async function (next) {

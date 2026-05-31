@@ -10,5 +10,10 @@ const OrdersSchema = new Schema({
   qty: Number,
   mode: String,
   price: Number,
-});
+  orderType: String,
+  status: {
+    type: String,
+    default: "COMPLETE",
+  },
+}, { timestamps: true });
 module.exports = { OrdersSchema };
