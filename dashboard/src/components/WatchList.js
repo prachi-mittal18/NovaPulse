@@ -17,6 +17,7 @@ import {
 
 import { watchlist } from "../data/data";
 import { DoughnutChart } from "./DoughnutChart";
+import PriceSpan from "./PriceSpan";
 
 const WatchList = () => {
   const [watchlistData, setWatchlistData] = useState(watchlist);
@@ -125,7 +126,7 @@ const WatchListItem = ({ stock }) => {
           ) : (
             <KeyboardArrowUp className="down" />
           )}
-          <span className="price">{stock.price}</span>
+          <PriceSpan price={stock.price} />
         </div>
       </div>
       {showWatchlistActions && <WatchListActions uid={stock.name} />}

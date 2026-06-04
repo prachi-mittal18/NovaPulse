@@ -3,6 +3,7 @@ import api from "../api/api";
 import GeneralContext from "./GeneralContext";
 import UserContext from "./UserContext";
 import Skeleton from "@mui/material/Skeleton";
+import PriceCell from "./PriceCell";
 
 const Positions = () => {
   const [allPositions, setAllPositions] = useState([]);
@@ -139,7 +140,7 @@ const PositionRow = ({ stock }) => {
       </td>
       <td>{stock.qty}</td>
       <td>{stock.avg ? stock.avg.toFixed(2) : "0.00"}</td>
-      <td>{livePrice ? livePrice.toFixed(2) : "0.00"}</td>
+      <PriceCell price={livePrice} />
       <td className={profClass}>
         {(curValue - stock.avg * stock.qty).toFixed(2)}
       </td>

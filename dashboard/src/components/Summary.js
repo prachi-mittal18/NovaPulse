@@ -1,5 +1,7 @@
 import React, { useContext } from "react";
 import UserContext from "./UserContext";
+import { usePriceFlash } from "../hooks/usePriceFlash";
+import "../styles/PriceFlash.css";
 
 const Summary = () => {
   const { username, balance, marginUsed, openingBalance, allHoldings } = useContext(UserContext);
@@ -15,6 +17,8 @@ const Summary = () => {
 
   const totalPL = currentTotalValue - totalInvestment;
   const pnlClass = totalPL >= 0 ? "profit" : "loss";
+
+  const flashClass = usePriceFlash(totalPL);
 
   return (
     <>
@@ -54,7 +58,7 @@ const Summary = () => {
 
         <div className="data">
           <div className="first">
-            <h3 className={pnlClass}>
+            <h3 className={`${pnlClass} ${flashClass}`} style={{ transition: "background-color 0.5s" }}>
               {(totalPL / 1000).toFixed(2)}k <small>{totalInvestment > 0 ? ((totalPL / totalInvestment) * 100).toFixed(2) : "0.00"}%</small>{" "}
             </h3>
             <p>P&L</p>

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import UserContext from "./UserContext";
 import { VerticalGraph } from "./VerticalGraph";
 import Skeleton from "@mui/material/Skeleton";
+import PriceCell from "./PriceCell";
 
 const Holdings = () => {
   const { allHoldings, isLoading } = useContext(UserContext);
@@ -112,7 +113,7 @@ const Holdings = () => {
                   <td>{stock.name}</td>
                   <td>{stock.qty}</td>
                   <td>{stock.avg.toFixed(2)}</td>
-                  <td>{stock.price.toFixed(2)}</td>
+                  <PriceCell price={stock.price} />
                   <td>{curValue.toFixed(2)}</td>
                   <td className={profClass}>
                     {(curValue - stock.avg * stock.qty).toFixed(2)}
