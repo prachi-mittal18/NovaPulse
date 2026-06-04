@@ -1,0 +1,19 @@
+@keyframes flashGreen {
+  from { background-color: rgba(76, 175, 80, 0.3); }
+  to { background-color: transparent; }
+}
+
+@keyframes flashRed {
+  from { background-color: rgba(244, 67, 54, 0.3); }
+  to { background-color: transparent; }
+}
+
+.price-up {
+  animation: flashGreen 1.5s ease-out;
+  transition: color 0.3s ease;
+}
+
+.price-down {
+  animation: flashRed 1.5s ease-out;
+  transition: color 0.3s ease;
+}
