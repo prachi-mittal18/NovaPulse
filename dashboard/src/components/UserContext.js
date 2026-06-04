@@ -9,6 +9,7 @@ export const UserProvider = ({ children }) => {
   const [allHoldings, setAllHoldings] = useState([]);
   const [prices, setPrices] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [isFinnhubLive, setIsFinnhubLive] = useState(false);
   const socket = useRef(null);
 
   const fetchUserData = async () => {
@@ -50,6 +51,10 @@ export const UserProvider = ({ children }) => {
       setPrices(updatedPrices);
     });
 
+    socket.current.on("connectionStatus", (data) => {
+      setIsFinnhubLive(data.isLive);
+    });
+
     return () => {
       if (socket.current) socket.current.disconnect();
     };
@@ -73,6 +78,7 @@ export const UserProvider = ({ children }) => {
         isLoading,
         refreshUserData: fetchUserData,
         refreshHoldings: fetchHoldings,
+        isFinnhubLive,
         socket: socket.current,
       }}
     >
