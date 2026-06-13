@@ -118,6 +118,12 @@ router.post("/verify", userVerification, async (req, res) => {
 
       // Fetch order details from Razorpay to get the actual amount paid
       const order = await razorpay.orders.fetch(razorpay_order_id);
+
+      // Robustness: Ensure the order is actually marked as paid by Razorpay
+      if (order.status !== "paid" && order.amount_paid === 0) {
+        return res.status(400).json({ message: "Payment not confirmed by gateway", success: false });
+      }
+
       const amountPaidINR = order.amount / 100;
 
       // Update user balance using safe integer math (cents/paise)

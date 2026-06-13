@@ -20,7 +20,7 @@ module.exports.Signup = async (req, res, next) => {
     res.cookie("token", token, {
         httpOnly: true,
         sameSite: "lax",
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         path: "/",
       });
     // Remove sensitive data before sending
@@ -59,7 +59,7 @@ module.exports.Login = async (req, res, next) => {
        res.cookie("token", token, {
         httpOnly: true,
         sameSite: "lax",
-        secure: false,
+        secure: process.env.NODE_ENV === "production",
         path: "/",
       });
        return res.status(200).json({ 
