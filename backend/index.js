@@ -119,6 +119,7 @@ const io = new Server(server, {
 
 const cookieParser = require("cookie-parser");
 const authRoute = require("./Routes/AuthRoute");
+const paymentRoute = require("./Routes/PaymentRoute");
 const { userVerification } = require("./Middlewares/AuthMiddleware");
 
 app.use(cors({
@@ -131,6 +132,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/", authRoute);
+app.use("/api/payments", paymentRoute);
 
 app.get("/allHoldings", userVerification, async (req, res) => {
   try {

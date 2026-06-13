@@ -6,7 +6,9 @@ import api from "../api/api";
 const Menu = () => {
   const [selectedMenu, setSelectedMenu] = useState(0); //0 is the default value(so it will be on dashboard)
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const { username, email } = useContext(UserContext);
+  const { username, email, hasTradingPin, refreshUserData } = useContext(UserContext);
+  const [isSettingPin, setIsSettingPin] = useState(false);
+  const [newPin, setNewPin] = useState("");
 
   const dropdownRef = useRef(null);
 
@@ -15,6 +17,8 @@ const Menu = () => {
       // If the dropdown is open and the click target is NOT inside the dropdownRef element
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsProfileDropdownOpen(false);
+        setIsSettingPin(false);
+        setNewPin("");
       }
     };
 
@@ -42,15 +46,30 @@ const Menu = () => {
       .catch((err) => console.error("Logout failed", err));
   };
 
+  const handleSetPin = () => {
+    if (!newPin || newPin.length < 4) {
+      return alert("PIN must be 4-6 digits.");
+    }
+
+    api.post("/set-pin", { pin: newPin })
+      .then(res => {
+        alert(res.data.message);
+        setIsSettingPin(false);
+        setNewPin("");
+        refreshUserData(); // Refresh context to update hasTradingPin immediately
+      })
+      .catch(err => {
+        alert(err.response?.data?.message || "Failed to set PIN");
+      });
+  };
+
   const menuClass = "menu";
   const activeMenuClass = "menu selected";
 
   return (
-    <div className="menu-container">
-      <Link to="/" style={{ textDecoration: "none" }} onClick={() => handleMenuClick(0)}>
-        <span className="logo-text">
-          Artha<span className="brand-mark">Odha</span>
-        </span>
+    <div className="menu-container" style={{ padding: "0 24px" }}>
+      <Link to="/" style={{ textDecoration: "none", marginRight: "3rem" }} onClick={() => handleMenuClick(0)}>
+        <span className="logo-text">Nova<span className="brand-mark">Pulse</span></span>
       </Link>
       <div className="menus">
         <ul>
@@ -137,28 +156,77 @@ const Menu = () => {
           className="profile" 
           ref={dropdownRef} 
           onClick={handleProfileClick} 
-          style={{ position: "relative" }}
+          style={{ position: "relative", marginRight: "1rem" }}
         >
-          <div className="avatar">AO</div>
-          <p className="username">{username}</p>
+          <div className="avatar">NP</div>
+          <p className="username" style={{ marginLeft: "10px" }}>{username}</p>
           
           {isProfileDropdownOpen && (
-            <div className="profile-dropdown" style={{
-              position: "absolute",
-              top: "100%",
-              right: 0,
-              backgroundColor: "#fff",
-              boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-              borderRadius: "8px",
-              padding: "20px",
-              minWidth: "220px",
-              zIndex: 1000,
-              marginTop: "12px",
-              textAlign: "left"
-            }}>
+            <div className="profile-dropdown" 
+              onClick={(e) => e.stopPropagation()} 
+              style={{
+                position: "absolute",
+                top: "100%",
+                right: 0,
+                backgroundColor: "#fff",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+                borderRadius: "8px",
+                padding: "20px",
+                minWidth: "220px",
+                zIndex: 1000,
+                marginTop: "12px",
+                textAlign: "left"
+              }}
+            >
               <p style={{ margin: "0 0 4px 0", fontWeight: "700", color: "#333", fontSize: "16px" }}>{username}</p>
               <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "#888" }}>{email}</p>
               <hr style={{ margin: "0 0 16px 0", border: "0", borderTop: "1px solid #f0f0f0" }} />
+              
+              {isSettingPin ? (
+                <div style={{ marginBottom: "12px" }}>
+                  <input 
+                    type="password" 
+                    placeholder="Enter 4-6 digit PIN"
+                    value={newPin}
+                    onChange={(e) => setNewPin(e.target.value)}
+                    maxLength={6}
+                    style={{ 
+                      width: "100%", 
+                      padding: "8px", 
+                      marginBottom: "8px", 
+                      borderRadius: "4px", 
+                      border: "1px solid #ccc",
+                      fontSize: "13px" 
+                    }}
+                  />
+                  <div style={{ display: "flex", gap: "5px" }}>
+                    <button onClick={handleSetPin} className="btn btn-blue" style={{ flex: 1, padding: "5px", fontSize: "12px" }}>Save</button>
+                    <button onClick={() => { setIsSettingPin(false); setNewPin(""); }} className="btn btn-grey" style={{ flex: 1, padding: "5px", fontSize: "12px" }}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSettingPin(true);
+                  }} 
+                  style={{ 
+                    width: "100%",
+                    padding: "10px", 
+                    marginBottom: "8px",
+                    cursor: "pointer", 
+                    fontSize: "13px", 
+                    border: "1px solid #06b6d4", 
+                    borderRadius: "6px", 
+                    backgroundColor: "#fff",
+                    color: "#06b6d4",
+                    fontWeight: "600"
+                  }}
+                >
+                  {hasTradingPin ? "Change Trading PIN" : "Set Trading PIN"}
+                </button>
+              )}
+
               <button 
                 onClick={handleLogout} 
                 style={{ 

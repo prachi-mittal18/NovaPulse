@@ -17,7 +17,7 @@ const UserSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: new Date(),
+    default: Date.now,
   },
   balance: {
     type: Number,
@@ -26,6 +26,9 @@ const UserSchema = new Schema({
   openingBalance: {
     type: Number,
     default: 100000,
+  },
+  tradingPin: {
+    type: String,
   },
 });
 

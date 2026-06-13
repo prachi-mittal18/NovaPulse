@@ -53,7 +53,8 @@ export const UserProvider = ({ children }) => {
       .finally(() => setIsLoading(false));
 
     // Centralized socket connection
-    socket.current = io("http://localhost:3002", { withCredentials: true });
+    const socketUrl = process.env.REACT_APP_API_URL || "http://localhost:3002";
+    socket.current = io(socketUrl, { withCredentials: true });
 
     socket.current.on("priceUpdate", (updatedPrices) => {
       setPrices(updatedPrices);
