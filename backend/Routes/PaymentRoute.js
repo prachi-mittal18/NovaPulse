@@ -67,7 +67,15 @@ router.post("/withdraw", userVerification, async (req, res) => {
       return res.status(400).json({ message: "Trading PIN not set. Please set it in your profile first.", success: false });
     }
 
-    const isPinValid = await bcrypt.compare(pin, user.tradingPin);
+    // Convert PIN to string and trim whitespace to ensure consistent comparison
+    const pinString = String(pin).trim();
+    
+    console.log(`[WITHDRAW] User: ${user.username} | PIN received: "${pinString}" | Type: ${typeof pinString} | Length: ${pinString.length}`);
+    console.log(`[WITHDRAW] Stored hash exists: ${!!user.tradingPin} | Hash length: ${user.tradingPin?.length}`);
+    
+    const isPinValid = await bcrypt.compare(pinString, user.tradingPin);
+    console.log(`[WITHDRAW] PIN validation result: ${isPinValid}`);
+    
     if (!isPinValid) {
       return res.status(403).json({ message: "Invalid Trading PIN", success: false });
     }
@@ -78,11 +86,15 @@ router.post("/withdraw", userVerification, async (req, res) => {
     if (amountCents <= 0) return res.status(400).json({ message: "Invalid amount", success: false });
     if (balanceCents < amountCents) return res.status(400).json({ message: "Insufficient balance for withdrawal", success: false });
 
-    user.balance = fromCents(balanceCents - amountCents);
-    await user.save();
+    // Atomic Update: Use $inc to prevent race conditions
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      req.user.id,
+      { $inc: { balance: -amount } },
+      { new: true }
+    );
 
     await TransactionModel.create({
-      user: user._id,
+      user: updatedUser._id,
       amount: -amount, // Negative for withdrawal
       razorpay_order_id: "N/A",
       razorpay_payment_id: `WITHDRAW_${Date.now()}`,
@@ -126,28 +138,22 @@ router.post("/verify", userVerification, async (req, res) => {
 
       const amountPaidINR = order.amount / 100;
 
-      // Update user balance using safe integer math (cents/paise)
-      const user = await UserModel.findById(req.user.id);
-      if (!user) {
-        console.error(`[PAYMENT_ERROR] User not found in DB: ${req.user.id}`);
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      const oldBalance = user.balance;
-      user.balance = fromCents(toCents(user.balance) + toCents(amountPaidINR));
-      await user.save();
+      // Atomic Update: Safely increment balance
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        req.user.id,
+        { $inc: { balance: amountPaidINR } },
+        { new: true }
+      );
 
       // Log the transaction in the ledger
       await TransactionModel.create({
-        user: user._id,
+        user: updatedUser._id,
         amount: amountPaidINR,
         razorpay_order_id,
         razorpay_payment_id,
         status: "SUCCESS"
       });
 
-      // Optional: Double check the database actually updated
-      const updatedUser = await UserModel.findById(user._id);
       console.log(`[PAYMENT_SUCCESS] DB Confirmed - User: ${updatedUser.username} | Persisted Balance: ₹${updatedUser.balance}`);
 
       return res.status(200).json({ message: "Payment verified and wallet updated successfully", success: true });

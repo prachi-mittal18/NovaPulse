@@ -59,23 +59,23 @@ const watchlistMap = {
   "HINDUNILVR": "1330",
   "ITC": "1660",
   "NESTLEIND": "17963",    // Should be live
-  "BRITANNIA": "547",    // FIXED: Was 1904 (was returning 0.0)
-  "COLPAL": "15141",       // FIXED: Was 1593 (was returning 0.0)
+  "BRITANNIA": "547",
+  "COLPAL": "15141",
 
   // AUTO SECTOR (3 stocks)
-  "MARUTI": "10999",       // FIXED: Was 3032 (was returning 0.0)
-  "HEROMOTOCO": "1348",   // FIXED: Was 2158 (was returning 0.0)
-  "BAJAJFINSV": "16675",   // FIXED: Was returning 0.0
+  "MARUTI": "10999",
+  "HEROMOTOCO": "1348",
+  "BAJAJFINSV": "16675",
 
   // TELECOM & UTILITIES (2 stocks)
   "BHARTIARTL": "10604",
-  "VODAFONE": "14366"  // FIXED: Was 3421 (was LT token!)
+  "VODAFONE": "14366"
 };
 
 // Angel One Index Tokens
 const indexMap = {
-  "NIFTY 50": { token: "99926000", exchange: "NSE" },
-  "SENSEX": { token: "99919000", exchange: "BSE" }
+  "NIFTY 50": { token: "99926000", exchange: "NSE" }, // Official NSE Scrip Token
+  "SENSEX": { token: "99919000", exchange: "BSE" }   // Official BSE Scrip Token
 };
 
 // Simulated Live Price Ticker initialization
@@ -93,7 +93,7 @@ const basePrices = {
   "TECHM": 1180.00,    // Updated: realistic current price
   // Energy & Infrastructure
   "RELIANCE": 2950.00, "LT": 3550.00, "POWERGRID": 285.00, 
-  "NTPC": 355.00,      // FIXED: Was 190.00 (way too low - current ~355)
+  "NTPC": 355.00,
   "JSWSTEEL": 850.00,
   // Pharma & Healthcare
   "SUNPHARMA": 1510.00, "CIPLA": 1425.00, "BAJAJHLTCARE": 525.00, 
