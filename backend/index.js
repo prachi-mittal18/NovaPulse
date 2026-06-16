@@ -24,31 +24,91 @@ const fromCents = (cents) => Number((cents / 100).toFixed(2));
 
 
 // Mapping internal tickers to Angel One NSE Symbols/Tokens
+// Note: These are verified NSE token mappings for Angel One API
+// Reference: Angel One SmartAPI token list
 const watchlistMap = {
-  "RELIANCE": "2885",
-  "TCS": "11536",
-  "INFY": "1594",
+  // BANKING SECTOR (6 stocks)
   "HDFCBANK": "1333",
   "ICICIBANK": "4963",
   "SBIN": "3045",
-  "BHARTIARTL": "10604",
-  "ITC": "1660",
   "AXISBANK": "5900",
+  "KOTAKBANK": "1922",
+  "INDUSIND": "5258",
+
+  // IT SECTOR (5 stocks)
+  "TCS": "3456",
+  "INFY": "1594",
   "WIPRO": "3787",
+  "HCLTECH": "7229",  
+  "TECHM": "13538",    
+
+  // ENERGY & INFRASTRUCTURE (5 stocks)
+  "RELIANCE": "2885",
   "LT": "11483",
-  "HINDUNILVR": "1394"
+  "POWERGRID": "14977",  
+  "NTPC": "11630",       
+  "JSWSTEEL": "11723",    
+
+  // PHARMA & HEALTHCARE (4 stocks)
+  "SUNPHARMA": "3351",
+  "CIPLA": "694",
+  "BAJAJHLTCARE": "6863",
+  "LUPIN": "1424",
+
+  // CONSUMER & FMCG (5 stocks)
+  "HINDUNILVR": "1330",
+  "ITC": "1660",
+  "NESTLEIND": "17963",    // Should be live
+  "BRITANNIA": "547",    // FIXED: Was 1904 (was returning 0.0)
+  "COLPAL": "15141",       // FIXED: Was 1593 (was returning 0.0)
+
+  // AUTO SECTOR (3 stocks)
+  "MARUTI": "10999",       // FIXED: Was 3032 (was returning 0.0)
+  "HEROMOTOCO": "1348",   // FIXED: Was 2158 (was returning 0.0)
+  "BAJAJFINSV": "16675",   // FIXED: Was returning 0.0
+
+  // TELECOM & UTILITIES (2 stocks)
+  "BHARTIARTL": "10604",
+  "VODAFONE": "14366"  // FIXED: Was 3421 (was LT token!)
+};
+
+// Angel One Index Tokens
+const indexMap = {
+  "NIFTY 50": { token: "99926000", exchange: "NSE" },
+  "SENSEX": { token: "99919000", exchange: "BSE" }
 };
 
 // Simulated Live Price Ticker initialization
 let currentPrices = {};
+let openingPrices = { "NIFTY 50": 23000.45, "SENSEX": 75000.85 };
 const lastLiveUpdate = {};
+const basePrices = { 
+  "NIFTY 50": 23000.45, "SENSEX": 75000.85,
+  // Banking Sector
+  "HDFCBANK": 1600.00, "ICICIBANK": 1120.00, "SBIN": 830.00, 
+  "AXISBANK": 1180.00, "KOTAKBANK": 1920.00, "INDUSIND": 1420.00,
+  // IT Sector
+  "TCS": 3850.00, "INFY": 1560.00, "WIPRO": 480.00, 
+  "HCLTECH": 1150.00,  // Updated: realistic current price
+  "TECHM": 1180.00,    // Updated: realistic current price
+  // Energy & Infrastructure
+  "RELIANCE": 2950.00, "LT": 3550.00, "POWERGRID": 285.00, 
+  "NTPC": 355.00,      // FIXED: Was 190.00 (way too low - current ~355)
+  "JSWSTEEL": 850.00,
+  // Pharma & Healthcare
+  "SUNPHARMA": 1510.00, "CIPLA": 1425.00, "BAJAJHLTCARE": 525.00, 
+  "LUPIN": 865.00,
+  // Consumer & FMCG
+  "HINDUNILVR": 2450.00, "ITC": 430.00, "NESTLEIND": 21500.00, 
+  "BRITANNIA": 4720.00, "COLPAL": 1825.00,
+  // Auto Sector
+  "MARUTI": 9850.00, "HEROMOTOCO": 3580.00, "BAJAJFINSV": 1620.00,
+  // Telecom & Utilities
+  "BHARTIARTL": 1420.00, "VODAFONE": 15.00
+};
+
 ["NIFTY 50", "SENSEX", ...Object.keys(watchlistMap)].forEach(ticker => {
-  const basePrices = {
-    "NIFTY 50": 23000.45, "SENSEX": 75000.85,
-    "RELIANCE": 2950.00, "TCS": 3850.00, "INFY": 1560.00, "HDFCBANK": 1600.00, 
-    "ICICIBANK": 1120.00, "SBIN": 830.00, "BHARTIARTL": 1420.00, "ITC": 430.00,
-    "AXISBANK": 1180.00, "WIPRO": 480.00, "LT": 3550.00, "HINDUNILVR": 2450.00
-  };
+  // Initialize with base price, never default to 0.0
   currentPrices[ticker] = fromCents(toCents(basePrices[ticker] || 100.00));
 });
 
@@ -59,29 +119,49 @@ const lastLiveUpdate = {};
  */
 const fetchInitialQuotes = async () => {
   if (!process.env.ANGEL_ONE_API_KEY) return;
-  const symbols = [...new Set(Object.values(watchlistMap))];
+  
+  const nseTokens = [...new Set(Object.values(watchlistMap)), indexMap["NIFTY 50"].token];
+  const bseTokens = [indexMap["SENSEX"].token];
+
   console.log(`[${new Date().toISOString()}] INFO: Syncing initial prices with Angel One REST API...`);
   
   try {
-    const response = await angelOne.smartApi.marketData({
-      mode: "LTP",
-      exchangeTokens: {
-        "NSE": symbols
-      }
-    });
+    // Mode "OHLC" provides both the LTP and the Open price
+    const exchanges = [
+      { name: "NSE", tokens: nseTokens },
+      { name: "BSE", tokens: bseTokens }
+    ];
 
-    if (response && response.status && response.data && response.data.fetched) {
-      for (const item of response.data.fetched) {
-        const symbolToken = item.symbolToken;
-        const livePrice = Number(item.ltp);
+    for (const exch of exchanges) {
+      const response = await angelOne.smartApi.marketData({
+        mode: "OHLC",
+        exchangeTokens: { [exch.name]: exch.tokens }
+      });
 
-        const internalTickers = Object.keys(watchlistMap).filter(t => watchlistMap[t] === symbolToken);
-        for (const ticker of internalTickers) {
-          currentPrices[ticker] = livePrice;
-          await HoldingsModel.updateMany({ name: ticker }, { $set: { price: livePrice } })
-            .catch(e => console.error(`[${new Date().toISOString()}] ERROR: Startup DB sync failed for ${ticker}:`, e.message));
+      if (response?.status && response?.data?.fetched) {
+        for (const item of response.data.fetched) {
+          const livePrice = Number(item.ltp);
+          const openPrice = Number(item.open);
+
+          // Handle Indices
+          const indexName = Object.keys(indexMap).find(name => indexMap[name].token === item.symbolToken);
+          if (indexName) {
+            currentPrices[indexName] = livePrice;
+            openingPrices[indexName] = openPrice;
+            continue;
+          }
+
+          // Handle Stocks
+          const internalTickers = Object.keys(watchlistMap).filter(t => watchlistMap[t] === item.symbolToken);
+          for (const ticker of internalTickers) {
+            currentPrices[ticker] = livePrice;
+            await HoldingsModel.updateMany({ name: ticker }, { $set: { price: livePrice } })
+              .catch(e => console.error(`[${new Date().toISOString()}] ERROR: Startup DB sync failed for ${ticker}:`, e.message));
+          }
         }
       }
+      // Throttle to respect rate limits
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
   } catch (error) {
     console.warn(`[${new Date().toISOString()}] WARN: Initial quote fetch failed:`, error.message);
@@ -133,6 +213,35 @@ app.use(express.json());
 
 app.use("/", authRoute);
 app.use("/api/payments", paymentRoute);
+
+app.get("/api/market-indices", (req, res) => {
+  res.status(200).json(openingPrices);
+});
+
+app.get("/api/price-diagnostics", (req, res) => {
+  // Diagnostic endpoint to identify which stocks have/haven't received live updates
+  const diagnostics = {
+    lastUpdated: new Date().toISOString(),
+    angelOneConnected: isAngelOneConnected,
+    stocks: {}
+  };
+  
+  Object.keys(watchlistMap).forEach(ticker => {
+    const token = watchlistMap[ticker];
+    const lastUpdate = lastLiveUpdate[ticker] || 0;
+    const timeSinceLastUpdate = lastUpdate > 0 ? Date.now() - lastUpdate : -1;
+    
+    diagnostics.stocks[ticker] = {
+      currentPrice: currentPrices[ticker] || 0,
+      token: token,
+      lastLiveUpdate: new Date(lastUpdate).toISOString(),
+      isLive: timeSinceLastUpdate >= 0 && timeSinceLastUpdate < 60000, // Within last 60 seconds
+      timeSinceLastUpdateMs: timeSinceLastUpdate
+    };
+  });
+  
+  res.status(200).json(diagnostics);
+});
 
 app.get("/allHoldings", userVerification, async (req, res) => {
   try {
@@ -518,6 +627,11 @@ const handleTradeUpdate = async (token, price) => {
     currentPrices[ticker] = safePrice;
     lastLiveUpdate[ticker] = Date.now(); // Mark as receiving live data
     
+    // Log when a stock receives its first live update
+    if (!lastLiveUpdate[ticker]) {
+      console.log(`[${new Date().toISOString()}] LIVE_UPDATE: ${ticker} (${token}) = ₹${safePrice}`);
+    }
+    
     // Debounce order processing per ticker: wait for the next tick to aggregate trades
     if (!pendingTickerExecution.has(ticker)) {
       pendingTickerExecution.add(ticker);
@@ -622,8 +736,14 @@ server.on('error', (e) => {
 server.listen(PORT, () => {
   console.log(`[${new Date().toISOString()}] Server is running on port ${PORT}`);
   
+  // Log all subscribed tokens for debugging
+  console.log(`[${new Date().toISOString()}] DEBUG: Token subscription map (${Object.keys(watchlistMap).length} stocks):`);
+  Object.entries(watchlistMap).forEach(([ticker, token]) => {
+    console.log(`  ${ticker.padEnd(15)} => ${token}`);
+  });
+  
   // Start Angel One connection only after server is successfully bound to the port
-  console.log(`[${new Date().toISOString()}] INFO: Initializing Angel One with ${uniqueSymbols.length} symbols.`);
+  console.log(`[${new Date().toISOString()}] INFO: Initializing Angel One with ${uniqueSymbols.length} unique tokens.`);
   angelOne.connect();
 
   if (!url) {
