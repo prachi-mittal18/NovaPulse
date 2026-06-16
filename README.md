@@ -1,18 +1,18 @@
-# ArthaOdha — Modern Trading & Investment Platform
+# NovaPulse — Modern Trading & Investment Platform
 
 
 
-ArthaOdha is a comprehensive, full-stack financial trading platform inspired by Zerodha. Originally started as a clone, it has been evolved into a unique brand identity featuring a premium light-themed design system, optimized performance, and a streamlined user experience.
+NovaPulse is a comprehensive, full-stack financial trading platform built from the ground up. Featuring a premium light-themed design system, optimized performance, and a streamlined user experience, NovaPulse brings fresh energy to modern investing.
 
 ## 🚀 Vision
-ArthaOdha aims to provide a seamless investing experience with zero brokerage and high-performance tools for modern investors. The platform is designed with a focus on clean aesthetics (Light Mode) and intuitive navigation.
+NovaPulse aims to provide a seamless investing experience with zero brokerage and high-performance tools for modern investors. The platform is designed with a focus on clean aesthetics (Light Mode) and intuitive navigation.
 
 ## ✨ Key Features
 - **Modern Landing Page**: Fully responsive marketing site with detailed product and pricing information.
 - **Trading Dashboard**: A high-performance dashboard for monitoring stocks, managing holdings, and executing trades.
 - **Dynamic Watchlist**: Real-time monitoring of indices (NIFTY 50, SENSEX) and individual stock movements.
 - **Portfolio Management**: Comprehensive view of Holdings, Positions, and Funds.
-- **Brand Identity**: Custom-designed logo and typography system (ArthaOdha).
+- **Brand Identity**: Custom-designed logo and typography system (NovaPulse).
 - **Smooth Navigation**: Integrated flow from signup to dashboard.
 
 ## 🛠️ Tech Stack
@@ -33,7 +33,7 @@ ArthaOdha aims to provide a seamless investing experience with zero brokerage an
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/prachi-mittal18/ArthaOdha.git
+   git clone https://github.com/prachi-mittal18/NovaPulse.git
    ```
 
 2. **Setup Backend**:
@@ -53,7 +53,7 @@ ArthaOdha aims to provide a seamless investing experience with zero brokerage an
    - Run `npm start`.
 
 ## 📸 Screenshots
-*(Coming soon — images of the new ArthaOdha Light Theme)*
+*(Coming soon — images of the new NovaPulse Light Theme)*
 
 ## 📄 License
 This project is licensed under the MIT License.
