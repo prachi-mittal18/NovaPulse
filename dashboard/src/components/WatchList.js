@@ -20,7 +20,14 @@ import { DoughnutChart } from "./DoughnutChart";
 import PriceSpan from "./PriceSpan";
 
 const WatchList = () => {
-  const [watchlistData, setWatchlistData] = useState(watchlist);
+  const [watchlistData, setWatchlistData] = useState(
+    watchlist.map((stock) => ({
+      ...stock,
+      price: 0,
+      percent: "0.00%",
+      isDown: false,
+    }))
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const { prices } = useContext(UserContext);
 
@@ -81,11 +88,12 @@ const WatchList = () => {
           type="text"
           name="search"
           id="search"
-          placeholder="Search eg:infy, bse, nifty fut weekly, gold mcx"
+          placeholder="Search eg: reliance, tcs, sbin, infy"
           className="search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <span style={{ fontSize: "10px", color: "#999", marginLeft: "10px", textTransform: "uppercase" }}>Prices in INR</span>
         <span className="counts"> {filteredWatchlist.length} / 50</span>
       </div>
 
@@ -94,10 +102,6 @@ const WatchList = () => {
           return <WatchListItem stock={stock} key={index} />;
         })}
       </ul>
-
-      <div className="watchlist-graph-container" style={{ padding: "20px" }}>
-        <DoughnutChart data={data} />
-      </div>
     </div>
   );
 };

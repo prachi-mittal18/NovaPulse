@@ -12,7 +12,8 @@ const SECTOR_MAP = {
   RELIANCE: "Energy", TATAPOWER: "Energy", ONGC: "Energy", POWERGRID: "Energy", NTPC: "Energy",
   SUNPHARMA: "Pharma", DRREDDY: "Pharma", CIPLA: "Pharma", DIVISLAB: "Pharma",
   MARUTI: "Auto", "M&M": "Auto", TATAMOTORS: "Auto",
-  HINDUNILVR: "FMCG", ITC: "FMCG", NESTLEIND: "FMCG", ASIANPAINT: "FMCG",
+  HINDUNILVR: "FMCG", ITC: "FMCG", NESTLEIND: "FMCG", ASIANPAINT: "FMCG", HUL: "FMCG",
+  BHARTIARTL: "Telecommunication", LT: "Infrastructure",
   TATASTEEL: "Metals", JSWSTEEL: "Metals", HINDALCO: "Metals", COALINDIA: "Metals",
   default: "Others"
 };

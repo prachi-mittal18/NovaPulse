@@ -10,6 +10,12 @@ const Funds = () => {
   const [transactions, setTransactions] = useState([]);
   const [showPinInput, setShowPinInput] = useState(false);
   const [pin, setPin] = useState("");
+  const [marginData, setMarginData] = useState({
+    span: 0,
+    delivery: 0,
+    exposure: 0,
+    collateral: 0
+  });
 
   const fetchHistory = async () => {
     try {
@@ -20,7 +26,34 @@ const Funds = () => {
     }
   };
 
+  const fetchMarginData = async () => {
+    try {
+      const res = await api.get("/allHoldings");
+      const holdings = res.data;
+      
+      // Calculate total investment (sum of qty * average price for each holding)
+      const totalInvestment = holdings.reduce((sum, h) => sum + (h.qty * h.avg), 0);
+      
+      // Calculate margins based on investment
+      const span = totalInvestment * 0.05;           // 5% of portfolio
+      const delivery = totalInvestment * 0.50;       // 50% of used margin
+      const exposure = totalInvestment * 0.20;       // 20% of portfolio
+      const collateral = totalInvestment;            // 100% - used margin as collateral
+      
+      setMarginData({
+        span,
+        delivery,
+        exposure,
+        collateral
+      });
+    } catch (err) {
+      console.error("Failed to fetch margin data", err);
+      // Keep default 0 values if fetch fails
+    }
+  };
+
   useEffect(() => {
+    fetchMarginData();
     fetchHistory();
   }, []);
 
@@ -112,17 +145,22 @@ const Funds = () => {
                   return;
                 }
 
-                if (pin.length < 4) return alert("Please enter your 6-digit PIN");
+                const trimmedPin = pin.trim();
+                
+                if (trimmedPin.length < 4) return alert("Please enter your PIN (at least 4 digits)");
+
+                console.log(`[FRONTEND] Withdrawal PIN: "${trimmedPin}" | Type: ${typeof trimmedPin} | Length: ${trimmedPin.length}`);
 
                 setLoading(true);
                 try {
-                  await api.post("/api/payments/withdraw", { amount: amountInput, pin: pin });
+                  await api.post("/api/payments/withdraw", { amount: amountInput, pin: trimmedPin });
                   await refreshUserData();
                   fetchHistory();
                   setShowPinInput(false);
                   setPin("");
                   alert(`Successfully withdrew ₹${amountInput}`);
                 } catch (err) {
+                  console.error("[FRONTEND] Withdrawal error:", err.response?.data);
                   alert(err.response?.data?.message || "Withdrawal failed");
                 } finally {
                   setLoading(false);
@@ -162,32 +200,32 @@ const Funds = () => {
             </div>
             <div className="data">
               <p>SPAN</p>
-              <p>0.00</p>
+              <p>₹{marginData.span.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div className="data">
               <p>Delivery margin</p>
-              <p>0.00</p>
+              <p>₹{marginData.delivery.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div className="data">
               <p>Exposure</p>
-              <p>0.00</p>
+              <p>₹{marginData.exposure.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div className="data">
               <p>Options premium</p>
-              <p>0.00</p>
+              <p>₹{(marginData.span * 0.1).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <hr />
             <div className="data">
               <p>Collateral (Liquid funds)</p>
-              <p>0.00</p>
+              <p>₹{(marginData.collateral * 0.3).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div className="data">
               <p>Collateral (Equity)</p>
-              <p>0.00</p>
+              <p>₹{(marginData.collateral * 0.7).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
             <div className="data">
               <p>Total Collateral</p>
-              <p>0.00</p>
+              <p>₹{marginData.collateral.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
             </div>
           </div>
         </div>

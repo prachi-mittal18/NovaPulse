@@ -1,5 +1,5 @@
 /* ==========================================
-   ArthaOdha — Light Design System (Dashboard)
+   NovaPulse — Light Design System (Dashboard)
    ========================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -17,19 +17,19 @@
   --text-muted: #94a3b8;
   --text-heading: #0f172a;
 
-  --accent-primary: #6366f1;
-  --accent-primary-light: #818cf8;
-  --accent-secondary: #4f46e5;
-  --accent-gradient: linear-gradient(135deg, #6366f1, #818cf8);
-  --accent-glow: 0 0 20px rgba(99, 102, 241, 0.1);
+  --accent-primary: #06b6d4;
+  --accent-primary-light: #22d3ee;
+  --accent-secondary: #0891b2;
+  --accent-gradient: linear-gradient(135deg, #06b6d4, #14b8a6);
+  --accent-glow: 0 0 20px rgba(6, 182, 212, 0.1);
 
   --profit: #10b981;
   --profit-bg: rgba(16, 185, 129, 0.1);
   --loss: #ef4444;
   --loss-bg: rgba(239, 68, 68, 0.1);
 
-  --buy-color: #6366f1;
-  --buy-hover: #4f46e5;
+  --buy-color: #06b6d4;
+  --buy-hover: #0891b2;
   --sell-color: #ef4444;
   --sell-hover: #dc2626;
 
@@ -167,9 +167,9 @@ body {
 .profile .avatar {
   width: 32px;
   height: 32px;
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(6, 182, 212, 0.1);
   color: var(--accent-primary);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -279,7 +279,7 @@ body {
 /* === Buttons === */
 .btn { padding: 10px 24px; border-radius: var(--radius-sm); border: none; font-weight: 600; cursor: pointer; transition: var(--transition); }
 .btn-blue { background: var(--accent-gradient); color: #fff; }
-.btn-blue:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); }
+.btn-blue:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3); }
 
 /* === Media Queries === */
 @media (max-width: 1024px) {
@@ -318,4 +318,3 @@ body {
   color: var(--text-muted);
   margin-top: 5px;
 }
-

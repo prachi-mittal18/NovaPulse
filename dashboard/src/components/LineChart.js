@@ -33,7 +33,7 @@ export const options = {
   scales: {
     y: {
       grid: { color: "#f0f0f0" },
-      ticks: { callback: (value) => `₹${value}` }
+      ticks: { callback: (value) => `₹${Number(value).toLocaleString('en-IN')}` }
     },
     x: { grid: { display: false } }
   },

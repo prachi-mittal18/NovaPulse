@@ -7,7 +7,7 @@ const PriceCell = ({ price }) => {
 
   return (
     <td className={flashClass} style={{ textAlign: "right", padding: "10px" }}>
-      {price ? price.toFixed(2) : "0.00"}
+      {price ? `₹${price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : "₹0.00"}
     </td>
   );
 };

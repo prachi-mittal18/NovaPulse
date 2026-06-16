@@ -29,7 +29,7 @@ const Orders = () => {
           <table>
             <thead>
               <tr>
-                <th>Time</th>
+                <th>Date/Time</th>
                 <th>Instrument</th>
                 <th>Qty.</th>
                 <th>Price</th>
@@ -71,7 +71,7 @@ const Orders = () => {
             <table>
               <thead>
                 <tr>
-                  <th>Time</th>
+                  <th>Date/Time</th>
                   <th>Instrument</th>
                   <th>Qty.</th>
                   <th>Price</th>
@@ -84,13 +84,13 @@ const Orders = () => {
                   <tr key={index}>
                     <td>
                       {order.createdAt 
-                        ? new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) 
+                        ? `${new Date(order.createdAt).toLocaleDateString()} ${new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`
                         : "--:--"
                       }
                     </td>
                     <td>{order.name}</td>
                     <td>{order.qty}</td>
-                    <td>{order.price.toFixed(2)}</td>
+                    <td>₹{order.price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                     <td>{order.mode}</td>
                     <td>
                       <span className={order.status === "COMPLETE" ? "profit" : "loss"}>

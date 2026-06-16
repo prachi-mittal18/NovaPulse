@@ -35,7 +35,7 @@ export const options = {
           const label = context.dataset.label || "";
           const value = context.parsed.y.toFixed(2);
           const quantities = context.dataset.quantities;
-          const lines = [`${label}: ₹${value}`];
+          const lines = [`${label}: ₹${Number(value).toLocaleString('en-IN')}`];
           if (quantities && quantities[context.dataIndex] !== undefined) {
             lines.push(`Quantity: ${quantities[context.dataIndex]}`);
           }

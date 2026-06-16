@@ -9,6 +9,7 @@ const Menu = () => {
   const { username, email, hasTradingPin, refreshUserData } = useContext(UserContext);
   const [isSettingPin, setIsSettingPin] = useState(false);
   const [newPin, setNewPin] = useState("");
+    const [isSavingPin, setIsSavingPin] = useState(false);
 
   const dropdownRef = useRef(null);
 
@@ -47,11 +48,17 @@ const Menu = () => {
   };
 
   const handleSetPin = () => {
-    if (!newPin || newPin.length < 4) {
+    const trimmedPin = newPin.trim();
+    
+    if (!trimmedPin || trimmedPin.length < 4) {
       return alert("PIN must be 4-6 digits.");
     }
 
-    api.post("/set-pin", { pin: newPin })
+    setIsSavingPin(true);
+
+    console.log(`[FRONTEND] Setting PIN: "${trimmedPin}" | Type: ${typeof trimmedPin} | Length: ${trimmedPin.length}`);
+
+    api.post("/set-pin", { pin: trimmedPin })
       .then(res => {
         alert(res.data.message);
         setIsSettingPin(false);
@@ -60,6 +67,9 @@ const Menu = () => {
       })
       .catch(err => {
         alert(err.response?.data?.message || "Failed to set PIN");
+      })
+      .finally(() => {
+        setIsSavingPin(false);
       });
   };
 
@@ -200,7 +210,14 @@ const Menu = () => {
                     }}
                   />
                   <div style={{ display: "flex", gap: "5px" }}>
-                    <button onClick={handleSetPin} className="btn btn-blue" style={{ flex: 1, padding: "5px", fontSize: "12px" }}>Save</button>
+                    <button 
+                      onClick={handleSetPin} 
+                      className="btn btn-blue" 
+                      style={{ flex: 1, padding: "5px", fontSize: "12px" }}
+                      disabled={isSavingPin}
+                    >
+                      {isSavingPin ? "Saving..." : "Save"}
+                    </button>
                     <button onClick={() => { setIsSettingPin(false); setNewPin(""); }} className="btn btn-grey" style={{ flex: 1, padding: "5px", fontSize: "12px" }}>Cancel</button>
                   </div>
                 </div>

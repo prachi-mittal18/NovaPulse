@@ -7,7 +7,7 @@ const PriceSpan = ({ price }) => {
 
   return (
     <span className={`price ${flashClass}`}>
-      {price ? price.toFixed(2) : "0.00"}
+      {price ? `₹${price.toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : "₹0.00"}
     </span>
   );
 };
