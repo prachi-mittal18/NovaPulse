@@ -63,8 +63,8 @@ const Login = () => {
     <div className='container py-5 mt-5'>
         <div className='row justify-content-center'>
             <div className='col-lg-5 col-md-8'>
-                <div className='ao-card p-5' style={{ background: '#fff' }}>
-                    <h1 className='display-6 text-center mb-4' style={{ fontWeight: 800 }}>Login to ArthaOdha</h1>
+                <div className='np-card p-5' style={{ background: '#fff' }}>
+                    <h1 className='display-6 text-center mb-4' style={{ fontWeight: 800 }}>Login to NovaPulse</h1>
                     <form onSubmit={handleSubmit}>
                         <div className='mb-4'>
                             <label htmlFor="email" className="form-label">Email address</label>

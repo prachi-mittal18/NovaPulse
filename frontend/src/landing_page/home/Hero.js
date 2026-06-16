@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 function Hero() {
     return ( 
-        <div className='ao-hero'>
+        <div className='np-hero'>
             <div className='container'>
                 <h1 className='mb-4'>
                     Invest <span className='gradient-text'>Smarter</span>.<br/>

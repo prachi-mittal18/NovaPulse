@@ -34,17 +34,17 @@ const Summary = () => {
 
         <div className="data">
           <div className="first">
-            <h3>{(balance / 1000).toFixed(2)}k</h3>
+            <h3>₹{(balance / 1000).toFixed(2)}k</h3>
             <p>Margin available</p>
           </div>
           <hr />
 
           <div className="second">
             <p>
-              Margins used <span>{marginUsed.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>{" "}
+              Margins used <span>₹{marginUsed.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>{" "}
             </p>
             <p>
-              Opening balance <span>{(openingBalance / 1000).toFixed(2)}k</span>{" "}
+              Opening balance <span>₹{(openingBalance / 1000).toFixed(2)}k</span>{" "}
             </p>
           </div>
         </div>
@@ -59,7 +59,7 @@ const Summary = () => {
         <div className="data">
           <div className="first">
             <h3 className={`${pnlClass} ${flashClass}`} style={{ transition: "background-color 0.5s" }}>
-              {(totalPL / 1000).toFixed(2)}k <small>{totalInvestment > 0 ? ((totalPL / totalInvestment) * 100).toFixed(2) : "0.00"}%</small>{" "}
+              ₹{(totalPL / 1000).toFixed(2)}k <small>{totalInvestment > 0 ? ((totalPL / totalInvestment) * 100).toFixed(2) : "0.00"}%</small>{" "}
             </h3>
             <p>P&L</p>
           </div>
@@ -67,10 +67,10 @@ const Summary = () => {
 
           <div className="second">
             <p>
-              Current Value <span>{(currentTotalValue / 1000).toFixed(2)}k</span>{" "}
+              Current Value <span>₹{(currentTotalValue / 1000).toFixed(2)}k</span>{" "}
             </p>
             <p>
-              Investment <span>{(totalInvestment / 1000).toFixed(2)}k</span>{" "}
+              Investment <span>₹{(totalInvestment / 1000).toFixed(2)}k</span>{" "}
             </p>
           </div>
         </div>

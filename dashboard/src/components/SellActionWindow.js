@@ -108,7 +108,7 @@ const SellActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "15px 20px", borderTop: "1px solid #eee" }}>
-        <span style={{ fontSize: "12px", color: "#666" }}>Proceeds: ₹{(stockQuantity * stockPrice).toFixed(2)}</span>
+        <span style={{ fontSize: "12px", color: "#666" }}>Proceeds: ₹{(stockQuantity * stockPrice).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
         <div style={{ display: "flex", gap: "10px" }}>
           <Link className="btn btn-red" onClick={handleSellClick} style={{ backgroundColor: "#ff5722", color: "white", textDecoration: "underline" }}>
             Sell

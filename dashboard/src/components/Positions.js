@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import api from "../api/api";
 import GeneralContext from "./GeneralContext";
 import UserContext from "./UserContext";
@@ -8,6 +8,17 @@ import PriceCell from "./PriceCell";
 const Positions = () => {
   const [allPositions, setAllPositions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { prices } = useContext(UserContext);
+
+  // Calculate total MTM (Mark-to-Market) P&L
+  const totalMTM = useMemo(() => {
+    return allPositions.reduce((acc, pos) => {
+      const livePrice = Number(prices[pos.name]) || pos.price;
+      return acc + (livePrice - pos.avg) * pos.qty;
+    }, 0);
+  }, [allPositions, prices]);
+
+  const pnlClass = totalMTM >= 0 ? "profit" : "loss";
 
   useEffect(() => {
     api
@@ -61,7 +72,16 @@ const Positions = () => {
 
   return (
     <div className="positions">
-      <h3 className="title">Positions ({allPositions.length})</h3>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+        <h3 className="title" style={{ margin: 0 }}>Positions ({allPositions.length})</h3>
+        {allPositions.length > 0 && (
+          <button 
+            className="btn btn-red" 
+            style={{ fontSize: "12px", padding: "6px 12px", backgroundColor: "#ff5722", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}
+            onClick={() => alert("Square off all functionality coming soon!")}
+          >Exit All</button>
+        )}
+      </div>
 
       <div className="order-table">
         <table>
@@ -82,6 +102,13 @@ const Positions = () => {
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="row" style={{ marginTop: "20px", borderTop: "1px solid #eee", paddingTop: "20px" }}>
+        <div className="col">
+          <h5 className={pnlClass}>₹{totalMTM.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</h5>
+          <p>Total MTM (Real-time P&L)</p>
+        </div>
       </div>
     </div>
   );
@@ -139,10 +166,10 @@ const PositionRow = ({ stock }) => {
         )}
       </td>
       <td>{stock.qty}</td>
-      <td>{stock.avg ? stock.avg.toFixed(2) : "0.00"}</td>
+      <td>{stock.avg ? `₹${stock.avg.toFixed(2)}` : "₹0.00"}</td>
       <PriceCell price={livePrice} />
       <td className={profClass}>
-        {(curValue - stock.avg * stock.qty).toFixed(2)}
+        ₹{(curValue - stock.avg * stock.qty).toFixed(2)}
       </td>
       <td className={profClass}>
         {((curValue - (stock.avg * stock.qty)) / (stock.avg * stock.qty) * 100).toFixed(2)}%

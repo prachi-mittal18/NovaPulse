@@ -3,10 +3,10 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <nav className="navbar navbar-expand-lg ao-navbar">
+    <nav className="navbar navbar-expand-lg np-navbar">
       <div className="container">
         <Link className="navbar-brand" to={"/"}>
-          Artha<span className="brand-mark">Odha</span>
+          Nova<span className="brand-mark">Pulse</span>
         </Link>
         <button
           className="navbar-toggler"

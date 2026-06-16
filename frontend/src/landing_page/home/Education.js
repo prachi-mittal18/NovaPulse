@@ -2,11 +2,11 @@ import React from 'react';
 
 function Education() {
     return ( 
-        <div className='ao-education'>
+        <div className='np-education'>
             <div className='container'>
                 <div className='row p-5 align-items-center'>
                     <div className='col-lg-6'>
-                        <div className='ao-card text-center' style={{ background: '#fff' }}>
+                        <div className='np-card text-center' style={{ background: '#fff' }}>
                             <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>📚</div>
                             <h3 className='mb-2'>Varsity</h3>
                             <p className='mb-0'>The largest free stock market education resource</p>

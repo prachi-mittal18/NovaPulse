@@ -119,11 +119,11 @@ const Holdings = () => {
                 <tr key={index}>
                   <td>{stock.name}</td>
                   <td>{stock.qty}</td>
-                  <td>{stock.avg.toFixed(2)}</td>
+                  <td>₹{stock.avg.toFixed(2)}</td>
                   <PriceCell price={stock.price} />
-                  <td>{curValue.toFixed(2)}</td>
+                  <td>₹{curValue.toFixed(2)}</td>
                   <td className={profClass}>
-                    {(curValue - stock.avg * stock.qty).toFixed(2)}
+                    ₹{(curValue - stock.avg * stock.qty).toFixed(2)}
                   </td>
                   <td className={profClass}>{netChg.toFixed(2)}%</td>
                   <td className="profit">0.00%</td>
@@ -137,19 +137,19 @@ const Holdings = () => {
       <div className="row">
         <div className="col">
           <h5>
-            {totalInvestment.toFixed(2)}
+            ₹{totalInvestment.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </h5>
           <p>Total investment</p>
         </div>
         <div className="col">
           <h5>
-            {currentTotalValue.toFixed(2)}
+            ₹{currentTotalValue.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
           </h5>
           <p>Current value</p>
         </div>
         <div className="col">
           <h5 className={profClass}>
-            {totalPL.toFixed(2)} ({((totalPL / (totalInvestment || 1)) * 100).toFixed(2)}%)
+            ₹{totalPL.toLocaleString('en-IN', { minimumFractionDigits: 2 })} ({((totalPL / (totalInvestment || 1)) * 100).toFixed(2)}%)
           </h5>
           <p>P&L</p>
         </div>

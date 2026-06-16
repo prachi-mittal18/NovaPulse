@@ -1,5 +1,5 @@
 /* ==========================================
-   ArthaOdha — Light Design System (Frontend)
+   NovaPulse — Light Design System (Frontend)
    ========================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -18,11 +18,11 @@
   --text-muted: #94a3b8;
   --text-heading: #0f172a;
 
-  --accent-primary: #6366f1;
-  --accent-primary-light: #818cf8;
-  --accent-secondary: #4f46e5;
-  --accent-gradient: linear-gradient(135deg, #6366f1, #818cf8, #94a3b8);
-  --accent-glow: 0 0 20px rgba(99, 102, 241, 0.1);
+  --accent-primary: #06b6d4;
+  --accent-primary-light: #22d3ee;
+  --accent-secondary: #0891b2;
+  --accent-gradient: linear-gradient(135deg, #06b6d4, #14b8a6);
+  --accent-glow: 0 0 20px rgba(6, 182, 212, 0.1);
 
   --profit: #10b981;
   --profit-bg: rgba(16, 185, 129, 0.1);
@@ -98,7 +98,7 @@ a:hover {
 }
 
 /* === Navbar === */
-.ao-navbar {
+.np-navbar {
   background: var(--bg-navbar) !important;
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -111,7 +111,7 @@ a:hover {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
-.ao-navbar .navbar-brand {
+.np-navbar .navbar-brand {
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.5px;
@@ -123,12 +123,12 @@ a:hover {
   color: transparent !important;
 }
 
-.ao-navbar .navbar-brand .brand-mark {
+.np-navbar .navbar-brand .brand-mark {
   font-weight: 400;
   opacity: 0.8;
 }
 
-.ao-navbar .nav-link {
+.np-navbar .nav-link {
   color: var(--text-secondary) !important;
   font-weight: 500;
   font-size: 0.9rem;
@@ -138,7 +138,7 @@ a:hover {
   transition: var(--transition);
 }
 
-.ao-navbar .nav-link::after {
+.np-navbar .nav-link::after {
   content: '';
   position: absolute;
   bottom: 0;
@@ -150,20 +150,20 @@ a:hover {
   transition: width 0.3s ease;
 }
 
-.ao-navbar .nav-link:hover {
+.np-navbar .nav-link:hover {
   color: var(--text-heading) !important;
 }
 
-.ao-navbar .nav-link:hover::after {
+.np-navbar .nav-link:hover::after {
   width: 100%;
 }
 
-.ao-navbar .nav-link.active {
+.np-navbar .nav-link.active {
   color: var(--accent-primary) !important;
 }
 
 /* === Hero Section === */
-.ao-hero {
+.np-hero {
   min-height: 70vh;
   display: flex;
   align-items: center;
@@ -172,11 +172,11 @@ a:hover {
   position: relative;
   overflow: hidden;
   padding: 4rem 1rem;
-  background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 70%),
+  background: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.05) 0%, transparent 70%),
               var(--bg-primary);
 }
 
-.ao-hero h1 {
+.np-hero h1 {
   font-size: 3.5rem;
   font-weight: 900;
   letter-spacing: -1.5px;
@@ -185,14 +185,14 @@ a:hover {
   color: var(--text-heading);
 }
 
-.ao-hero h1 .gradient-text {
+.np-hero h1 .gradient-text {
   background: var(--accent-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.ao-hero .hero-subtitle {
+.np-hero .hero-subtitle {
   font-size: 1.2rem;
   color: var(--text-secondary);
   max-width: 600px;
@@ -209,19 +209,19 @@ a:hover {
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3);
   text-decoration: none;
   display: inline-block;
 }
 
 .hero-cta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 20px 25px -5px rgba(6, 182, 212, 0.4);
   color: #fff;
 }
 
 /* === Glass Card === */
-.ao-card {
+.np-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -230,19 +230,19 @@ a:hover {
   box-shadow: var(--shadow);
 }
 
-.ao-card:hover {
+.np-card:hover {
   border-color: var(--accent-primary-light);
   transform: translateY(-4px);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 /* === Stats Section === */
-.ao-stats {
+.np-stats {
   padding: 5rem 0;
   background: var(--bg-secondary);
 }
 
-.ao-stats h2 {
+.np-stats h2 {
   font-size: 1.3rem;
   font-weight: 600;
   margin-top: 2rem;
@@ -250,16 +250,16 @@ a:hover {
   color: var(--text-heading);
 }
 
-.ao-stats p {
+.np-stats p {
   color: var(--text-secondary);
 }
 
 /* === Pricing Section === */
-.ao-pricing {
+.np-pricing {
   padding: 5rem 0;
 }
 
-.ao-pricing-card {
+.np-pricing-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
@@ -269,12 +269,12 @@ a:hover {
   box-shadow: var(--shadow);
 }
 
-.ao-pricing-card:hover {
+.np-pricing-card:hover {
   border-color: var(--accent-primary);
   transform: translateY(-6px);
 }
 
-.ao-pricing-card .price {
+.np-pricing-card .price {
   font-size: 3rem;
   font-weight: 900;
   background: var(--accent-gradient);
@@ -284,18 +284,18 @@ a:hover {
 }
 
 /* === Education Section === */
-.ao-education {
+.np-education {
   padding: 5rem 0;
   background: var(--bg-secondary);
 }
 
 /* === Open Account / CTA Section === */
-.ao-cta-section {
+.np-cta-section {
   padding: 6rem 0;
   text-align: center;
 }
 
-.ao-cta-section .hero-cta {
+.np-cta-section .hero-cta {
   background: var(--accent-gradient);
   color: #fff;
   border: none;
@@ -303,17 +303,17 @@ a:hover {
   border-radius: var(--radius-xl);
   font-size: 1.05rem;
   font-weight: 600;
-  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 15px -3px rgba(6, 182, 212, 0.3);
 }
 
 /* === Footer === */
-.ao-footer {
+.np-footer {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
   padding: 4rem 0 2rem;
 }
 
-.ao-footer .footer-brand {
+.np-footer .footer-brand {
   font-size: 1.5rem;
   font-weight: 800;
   background: var(--accent-gradient);
@@ -324,7 +324,7 @@ a:hover {
   color: transparent !important;
 }
 
-.ao-footer .footer-brand .brand-mark {
+.np-footer .footer-brand .brand-mark {
   font-weight: 400;
   opacity: 0.8;
 }
@@ -339,14 +339,14 @@ a:hover {
   padding-left: 4px;
 }
 
-.ao-footer .footer-legal {
+.np-footer .footer-legal {
   color: var(--text-muted);
   border-top: 1px solid var(--border);
 }
 
 /* === Support === */
 #supportHero {
-  background: linear-gradient(135deg, #6366f1, #818cf8);
+  background: linear-gradient(135deg, #06b6d4, #14b8a6);
   color: white;
 }
 
@@ -360,25 +360,25 @@ a:hover {
 }
 
 /* === Products === */
-.ao-products-hero h1 {
+.np-products-hero h1 {
   background: var(--accent-gradient);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.ao-universe .partner-card {
+.np-universe .partner-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
 }
 
 /* === Team === */
-.ao-team img {
+.np-team img {
   border: 3px solid var(--border);
 }
 
-.ao-team img:hover {
+.np-team img:hover {
   border-color: var(--accent-primary);
 }
 
@@ -387,4 +387,35 @@ a:hover {
   background: var(--accent-gradient) !important;
   border: none !important;
   border-radius: var(--radius-xl) !important;
+}
+
+
+/* === Pricing Page === */
+.np-pricing-page {
+  padding: 3rem 0;
+  min-height: 70vh;
+}
+
+/* === Product Section === */
+.np-product-section {
+  padding: 4rem 0;
+}
+
+/* === 404 Not Found === */
+.np-notfound {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.np-notfound h1 {
+  font-size: 6rem;
+  font-weight: 900;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1rem;
 }

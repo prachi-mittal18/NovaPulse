@@ -10,7 +10,7 @@ function LeftImageSection({
   appStore,
 }) {
   return (
-    <div className="container ao-product-section">
+    <div className="container np-product-section">
       <div className="row mt-5 align-items-center">
         <div className="col-6 p-5">
           <img src={imageURL} className="p-2" style={{ width: '100%', borderRadius: '16px' }} alt={productName} />

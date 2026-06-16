@@ -23,7 +23,7 @@ function Hero() {
                             <a href='' className='text-muted' style={{ borderBottom: '1px solid var(--border)' }}>Track account opening</a>
                             <a href='' className='text-muted' style={{ borderBottom: '1px solid var(--border)' }}>Track segment activation</a>
                             <a href='' className='text-muted' style={{ borderBottom: '1px solid var(--border)' }}>Intraday margins</a>
-                            <a href='' className='text-muted' style={{ borderBottom: '1px solid var(--border)' }}>Kite user manual</a>
+                            <a href='' className='text-muted' style={{ borderBottom: '1px solid var(--border)' }}>Pulse user manual</a>
                         </div>
                     </div>
                     <div className='col-lg-5 mt-5 mt-lg-0 ps-lg-5'>

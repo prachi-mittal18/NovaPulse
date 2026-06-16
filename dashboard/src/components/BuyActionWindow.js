@@ -114,7 +114,7 @@ const BuyActionWindow = ({ uid }) => {
       </div>
 
       <div className="buttons" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "15px 20px", borderTop: "1px solid #eee" }}>
-        <span style={{ fontSize: "12px", color: "#666" }}>Margin required ₹{(stockQuantity * stockPrice).toFixed(2)}</span>
+        <span style={{ fontSize: "12px", color: "#666" }}>Margin required ₹{(stockQuantity * stockPrice).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
         <div style={{ display: "flex", gap: "10px" }}>
           <Link className="btn btn-blue" onClick={handleBuyClick}>
             Buy

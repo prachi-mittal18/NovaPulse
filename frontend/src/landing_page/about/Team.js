@@ -2,7 +2,7 @@ import React from "react";
 
 function Team() {
   return (
-    <div className="container ao-team">
+    <div className="container np-team">
       <div className="row p-3">
         <h1 className="display-6 text-center" style={{ fontWeight: 800 }}>
           The Team
@@ -17,7 +17,7 @@ function Team() {
         </div>
         <div className="col-lg-6 d-flex flex-column justify-content-center p-4">
           <p>
-            Nithin bootstrapped and founded ArthaOdha in 2010 to overcome the hurdles he faced during his decade long stint as a trader. Today, ArthaOdha has changed the landscape of the Indian broking industry.
+            Nithin bootstrapped and founded NovaPulse in 2010 to overcome the hurdles he faced during his decade long stint as a trader. Today, NovaPulse has changed the landscape of the Indian broking industry.
           </p>
     
           <p>
