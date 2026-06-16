@@ -1,0 +1,59 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Teal to green gradient -->
+    <linearGradient id="npGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#14b8a6;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glow filter -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="200" height="200" fill="#f8fafc" rx="20"/>
+
+  <!-- Outer accent circle -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="url(#npGradient)" stroke-width="1.5" opacity="0.2"/>
+
+  <!-- "N" Letter (stylized) -->
+  <g filter="url(#glow)">
+    <!-- Vertical line on left -->
+    <rect x="55" y="55" width="5" height="70" fill="url(#npGradient)" rx="2.5"/>
+    
+    <!-- Diagonal connecting line -->
+    <line x1="60" y1="100" x2="85" y2="60" 
+          stroke="url(#npGradient)" stroke-width="5" stroke-linecap="round"/>
+    
+    <!-- Vertical line on right -->
+    <rect x="80" y="55" width="5" height="70" fill="url(#npGradient)" rx="2.5"/>
+  </g>
+
+  <!-- "P" Letter (stylized as a pulse) -->
+  <g filter="url(#glow)">
+    <!-- Vertical stem -->
+    <rect x="105" y="55" width="5" height="70" fill="url(#npGradient)" rx="2.5"/>
+    
+    <!-- Top bump (P shape) -->
+    <path d="M 110 55 Q 130 55 130 70 Q 130 80 115 80 L 110 80" 
+          fill="none" stroke="url(#npGradient)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Pulse wave lines (representing heartbeat) -->
+    <path d="M 115 95 L 120 95 L 122 90 L 124 100 L 128 88 L 135 112 L 138 95 L 142 95" 
+          fill="none" stroke="url(#npGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Central accent dot -->
+  <circle cx="100" cy="115" r="3" fill="url(#npGradient)" opacity="0.6"/>
+
+  <!-- Decorative accent line below -->
+  <line x1="70" y1="140" x2="130" y2="140" 
+        stroke="url(#npGradient)" stroke-width="2" opacity="0.3" stroke-linecap="round"/>
+
+</svg>

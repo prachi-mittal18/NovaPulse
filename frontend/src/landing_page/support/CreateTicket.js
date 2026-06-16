@@ -2,7 +2,7 @@ import React from "react";
 
 function CreateTicket() {
   return (
-    <div className="container ao-support-section">
+    <div className="container np-support-section">
       <div className="row p-5 mt-5 mb-5">
         <h1 className="fs-2 ">To create a ticket, select a relevant topic</h1>
 
@@ -25,12 +25,12 @@ function CreateTicket() {
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
-            Charges at ArthaOdha
+            Charges at NovaPulse
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
            
-            ArthaOdha IDFC FIRST Bank 3-in-1 Account
+            NovaPulse IDFC FIRST Bank 3-in-1 Account
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
@@ -41,7 +41,7 @@ function CreateTicket() {
 
         <div className="col-4 p-5 mb-5 mt-5">
           
-          <h4 className="mb-4">Your ArthaOdha Account</h4>
+          <h4 className="mb-4">Your NovaPulse Account</h4>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
             Login Credentials
@@ -68,13 +68,13 @@ function CreateTicket() {
 
         <div className="col-4 p-5 mb-5 mt-5">
           
-          <h4 className="mb-5">Your ArthaOdha Account</h4>
+          <h4 className="mb-5">Your NovaPulse Account</h4>
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
             Margin/leverage, Product and order types
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
-            Kite Web and Mobile
+            Pulse Web and Mobile
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
@@ -91,7 +91,7 @@ function CreateTicket() {
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
             
-            Kite API
+            Pulse API
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
@@ -131,7 +131,7 @@ function CreateTicket() {
 
         <div className="col-4 p-5 mb-5 ">
           {" "}
-          <h4 className="mb-5">Console</h4>
+          <h4 className="mb-5">Nexus</h4>
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
             Reports
           </a>
@@ -161,17 +161,17 @@ function CreateTicket() {
 
         <div className="col-4 p-5 mb-5 ">
           
-          <h4 className="mb-5">Coin</h4>
+          <h4 className="mb-5">Orbit</h4>
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
             Understanding Mutual Funds
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
-            About Coin
+            About Orbit
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
-            Buying and Selling through Coin
+            Buying and Selling through Orbit
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
@@ -184,11 +184,11 @@ function CreateTicket() {
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
             
-            Coin App
+            Orbit App
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>
-            Moving to Coin
+            Moving to Orbit
           </a>
           <br />
           <a href="" style={{ textDecoration: "none", lineHeight: "2.5" }}>

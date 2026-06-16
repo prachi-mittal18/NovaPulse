@@ -2,12 +2,12 @@ import React from "react";
 
 function Footer() {
   return (
-    <footer className="ao-footer">
+    <footer className="np-footer">
       <div className="container">
         <div className="row mb-5">
           <div className="col-lg-3 mb-4">
-            <span className="footer-brand mb-3 d-block">Artha<span className="brand-mark">Odha</span></span>
-            <p className="small text-muted">&copy; 2010 - 2025, ArthaOdha Broking Ltd. All rights reserved.</p>
+            <span className="footer-brand mb-3 d-block">Nova<span className="brand-mark">Pulse</span></span>
+            <p className="small text-muted">&copy; 2010 - 2025, NovaPulse Broking Ltd. All rights reserved.</p>
           </div>
 
           <div className="col-lg-2 col-6 mb-4">  
@@ -53,7 +53,7 @@ function Footer() {
 
         <div className="footer-legal pt-4 mt-4" style={{ borderTop: '1px solid var(--border)', fontSize: '0.75rem', lineHeight: '1.6' }}>
           <p className="text-muted mb-4">
-            ArthaOdha Broking Ltd.: Member of NSE, BSE & MCX – SEBI Registration no.: INZ000031633. CDSL/NSDL: Depository services through ArthaOdha Broking Ltd. – SEBI Registration no.: IN-DP-431-2019. Registered Address: ArthaOdha Broking Ltd., Bengaluru, India.
+            NovaPulse Broking Ltd.: Member of NSE, BSE & MCX – SEBI Registration no.: INZ000031633. CDSL/NSDL: Depository services through NovaPulse Broking Ltd. – SEBI Registration no.: IN-DP-431-2019. Registered Address: NovaPulse Broking Ltd., Bengaluru, India.
           </p>
           <p className="text-muted mb-0">
             Investments in securities market are subject to market risks; read all the related documents carefully before investing.

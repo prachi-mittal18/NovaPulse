@@ -7,7 +7,7 @@ function RightImageSection(
   learnMore}
 ) {
   return (
-    <div className="container ao-product-section mt-5">
+    <div className="container np-product-section mt-5">
       <div className="row align-items-center">
 
          <div className="col-5 p-5" >

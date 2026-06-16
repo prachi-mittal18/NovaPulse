@@ -2,7 +2,7 @@ import React from 'react';
 
 function Pricing() {
     return ( 
-        <div className='ao-pricing'>
+        <div className='np-pricing'>
             <div className='container'>
                 <div className='row align-items-center'>
                     <div className='col-lg-5'>
@@ -12,15 +12,15 @@ function Pricing() {
                     </div>
                 
                     <div className='col-lg-7 d-flex flex-wrap justify-content-center gap-3 mt-4 mt-lg-0'>
-                        <div className='ao-pricing-card' style={{ flex: '1 1 200px', padding: '1.5rem' }}>
+                        <div className='np-pricing-card' style={{ flex: '1 1 200px', padding: '1.5rem' }}>
                             <div className='price' style={{ fontSize: '2.5rem' }}>₹0</div>
                             <div className='fw-bold mt-2'>Free account opening</div>
                         </div>
-                        <div className='ao-pricing-card' style={{ flex: '1 1 200px', padding: '1.5rem' }}>
+                        <div className='np-pricing-card' style={{ flex: '1 1 200px', padding: '1.5rem' }}>
                             <div className='price' style={{ fontSize: '2.5rem' }}>₹0</div>
                             <div className='fw-bold mt-2'>Equity delivery</div>
                         </div>
-                        <div className='ao-pricing-card' style={{ flex: '1 1 200px', padding: '1.5rem' }}>
+                        <div className='np-pricing-card' style={{ flex: '1 1 200px', padding: '1.5rem' }}>
                             <div className='price' style={{ fontSize: '2.5rem' }}>₹20</div>
                             <div className='fw-bold mt-2'>Intraday and F&Os</div>
                         </div>

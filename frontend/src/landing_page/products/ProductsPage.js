@@ -13,8 +13,8 @@ function ProductsPage() {
 
       <LeftImageSection
         imageURL="/media/kite.png"
-        productName="Kite"
-        productDescription="Our ultra-fast flagship trading platform with streaming market data, advanced charts, an elegant UI, and more. Enjoy the Kite experience seamlessly on your Android and iOS devices."
+        productName="Pulse"
+        productDescription="Our ultra-fast flagship trading platform with streaming market data, advanced charts, an elegant UI, and more. Enjoy the Pulse experience seamlessly on your Android and iOS devices."
         tryDemo=""
         learnMore=""
         googlePlay=""
@@ -23,14 +23,14 @@ function ProductsPage() {
 
       <RightImageSection
         imageURL="/media/console.png"
-        productName="Console"
-        productDescription="The central dashboard for your ArthaOdha account. Gain insights into your trades and investments with in-depth reports and visualisations."
+        productName="Nexus"
+        productDescription="The central dashboard for your NovaPulse account. Gain insights into your trades and investments with in-depth reports and visualisations."
         learnMore=""
       />
 
       <LeftImageSection
         imageURL="/media/coin.png"
-        productName="Coin"
+        productName="Orbit"
         productDescription="Buy direct mutual funds online, commission-free, delivered directly to your Demat account. Enjoy the investment experience on your Android and iOS devices."
         tryDemo=""
         learnMore=""
@@ -39,7 +39,7 @@ function ProductsPage() {
       />
       <RightImageSection
       imageURL="/media/kiteconnect.png"
-        productName="Kite Connect API"
+        productName="Pulse Connect API"
         productDescription="Build powerful trading platforms and experiences with our super simple HTTP/JSON APIs. If you are a startup, build your investment app and showcase it to our clientbase."
         learnMore=""
          />
@@ -48,7 +48,7 @@ function ProductsPage() {
 
       <LeftImageSection
         imageURL="/media/varsity.png"
-        productName="Varsity Mobile"
+        productName="Academy Mobile"
         productDescription="An easy to grasp, collection of stock market lessons with in-depth coverage and illustrations. Content is broken down into bite-size cards to help you learn on the go."
         tryDemo=""
         learnMore=""
@@ -56,7 +56,7 @@ function ProductsPage() {
         appStore=""
       />
       <p className="text-center" style={{ color: '#9a9ab0' }}>
-        Want to know more about our technology stack? Check out the <a href="">ArthaOdha.tech </a>blog.
+        Want to know more about our technology stack? Check out the <a href="">NovaPulse.tech </a>blog.
       </p>
 
       <Universe />

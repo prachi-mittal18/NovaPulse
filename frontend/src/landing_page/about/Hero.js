@@ -16,8 +16,8 @@ function Hero() {
             We kick-started operations on the 15th of August, 2010 with the goal
             of breaking all barriers that traders and investors face in India in
             terms of cost, support, and technology. We named the company
-            ArthaOdha, a combination of "Artha" (wealth) and "Odha" (barrier-free), 
-            symbolizing our mission of barrier-free wealth creation.
+            NovaPulse, a combination of "Nova" (a new star) and "Pulse" (the heartbeat of the markets), 
+            symbolizing our mission to bring fresh energy to wealth creation.
           </p>
           <p>
             Today, our disruptive pricing models and in-house technology have
