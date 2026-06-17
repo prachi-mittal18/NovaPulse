@@ -1,8 +1,8 @@
 import axios from "axios";
 
-// 1. Create instance with environment variables
+// 1. Create instance with hardcoded backend URL
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || "http://localhost:3002", // Centralized base URL
+  baseURL: "http://localhost:3002", // Backend service URL
   withCredentials: true,           // Required for sending/receiving cookies
   timeout: 10000,                  // Kill request if it takes longer than 10 seconds
   headers: {

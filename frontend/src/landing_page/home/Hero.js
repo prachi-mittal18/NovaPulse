@@ -7,7 +7,7 @@ function Hero() {
     useEffect(() => {
         const fetchPlatformStats = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:3002'}/api/platform-stats`);
+                const response = await fetch(`http://localhost:3002/api/platform-stats`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.success && data.formattedUsers) {

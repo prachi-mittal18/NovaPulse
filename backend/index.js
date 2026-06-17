@@ -12,7 +12,7 @@ const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
 const { OrdersModel } = require("./model/OrdersModel");
 const { UserModel } = require("./model/UserModel");
-const PORT = process.env.PORT || 3002;
+const PORT = 3002;
 
 /**
  * Configuration & Helpers
