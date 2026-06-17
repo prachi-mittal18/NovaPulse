@@ -22,6 +22,18 @@ const PORT = process.env.PORT || 3002;
 const toCents = (amount) => Math.round(Number(amount) * 100);
 const fromCents = (cents) => Number((cents / 100).toFixed(2));
 
+// Helper function to format user count to Indian number system (e.g., "16 L" for 1.6 crore)
+const formatUserCount = (count) => {
+  if (count >= 10000000) { // >= 1 crore
+    return (count / 10000000).toFixed(1) + " Cr+";
+  } else if (count >= 100000) { // >= 1 lakh
+    return (count / 100000).toFixed(1) + " L";
+  } else if (count >= 1000) {
+    return (count / 1000).toFixed(1) + "K";
+  }
+  return count.toString();
+};
+
 
 // Mapping internal tickers to Angel One NSE Symbols/Tokens
 // Note: These are verified NSE token mappings for Angel One API
@@ -127,6 +139,7 @@ const fetchInitialQuotes = async () => {
   
   try {
     // Mode "OHLC" provides both the LTP and the Open price
+    // Mode "OHLC" provides both the LTP and the Open price
     const exchanges = [
       { name: "NSE", tokens: nseTokens },
       { name: "BSE", tokens: bseTokens }
@@ -155,7 +168,11 @@ const fetchInitialQuotes = async () => {
           const internalTickers = Object.keys(watchlistMap).filter(t => watchlistMap[t] === item.symbolToken);
           for (const ticker of internalTickers) {
             currentPrices[ticker] = livePrice;
-            await HoldingsModel.updateMany({ name: ticker }, { $set: { price: livePrice } })
+            // Also update opening prices in holdings
+            await HoldingsModel.updateMany(
+              { name: ticker }, 
+              { $set: { price: livePrice, openingPrice: openPrice } }
+            )
               .catch(e => console.error(`[${new Date().toISOString()}] ERROR: Startup DB sync failed for ${ticker}:`, e.message));
           }
         }
@@ -241,6 +258,24 @@ app.get("/api/price-diagnostics", (req, res) => {
   });
   
   res.status(200).json(diagnostics);
+});
+
+app.get("/api/platform-stats", async (req, res) => {
+  try {
+    const activeUserCount = await UserModel.countDocuments();
+    res.status(200).json({
+      success: true,
+      activeUsers: activeUserCount,
+      formattedUsers: formatUserCount(activeUserCount)
+    });
+  } catch (error) {
+    console.error(`[${new Date().toISOString()}] ERROR: Failed to fetch platform stats:`, error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Error fetching platform stats",
+      activeUsers: 0
+    });
+  }
 });
 
 app.get("/allHoldings", userVerification, async (req, res) => {

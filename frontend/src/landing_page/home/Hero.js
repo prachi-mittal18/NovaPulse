@@ -1,7 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function Hero() {
+    const [activeUsers, setActiveUsers] = useState("1.6Cr+");
+
+    useEffect(() => {
+        const fetchPlatformStats = async () => {
+            try {
+                const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:3002'}/api/platform-stats`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.formattedUsers) {
+                        setActiveUsers(data.formattedUsers);
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching platform stats:", error);
+                // Fallback to default value already in state
+            }
+        };
+
+        fetchPlatformStats();
+    }, []);
+
     return ( 
         <div className='np-hero'>
             <div className='container'>
@@ -19,7 +40,7 @@ function Hero() {
 
                 <div className='row mt-5 pt-4 justify-content-center'>
                     <div className='col-auto px-4'>
-                        <p style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-primary)', marginBottom: '0' }}>1.6Cr+</p>
+                        <p style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--accent-primary)', marginBottom: '0' }}>{activeUsers}</p>
                         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Active Investors</p>
                     </div>
                     <div className='col-auto px-4 border-start border-end'>

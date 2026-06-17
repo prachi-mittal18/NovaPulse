@@ -114,6 +114,11 @@ const Holdings = () => {
               const isProfit = curValue - stock.avg * stock.qty >= 0.0;
               const profClass = isProfit ? "profit" : "loss";
               const netChg = ((stock.price - stock.avg) / stock.avg) * 100;
+              
+              // Day change: Use opening price if available from Angel One, otherwise estimate
+              const openingPrice = stock.openingPrice || stock.price;
+              const dayChg = ((stock.price - openingPrice) / openingPrice) * 100;
+              const dayChgClass = dayChg >= 0 ? "profit" : "loss";
 
               return (
                 <tr key={index}>
@@ -126,7 +131,7 @@ const Holdings = () => {
                     ₹{(curValue - stock.avg * stock.qty).toFixed(2)}
                   </td>
                   <td className={profClass}>{netChg.toFixed(2)}%</td>
-                  <td className="profit">0.00%</td>
+                  <td className={dayChgClass}>{dayChg.toFixed(2)}%</td>
                 </tr>
               );
             })}

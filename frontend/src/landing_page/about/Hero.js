@@ -5,45 +5,46 @@ function Hero() {
     <div className="container">
       <div className="row p-5">
         <h1 className="display-6 text-center" style={{ fontWeight: 800 }}>
-          We pioneered the discount broking model in India.
-          <br /> Now, we are breaking ground with our technology.
+          Modern trading for the digital generation.
+          <br /> Powerful technology meets simplicity.
         </h1>
       </div>
 
       <div className="row p-lg-5" style={{ lineHeight: "1.8", fontSize: "1.05rem" }}>
         <div className="col-lg-6 p-4">
           <p>
-            We kick-started operations on the 15th of August, 2010 with the goal
-            of breaking all barriers that traders and investors face in India in
-            terms of cost, support, and technology. We named the company
-            NovaPulse, a combination of "Nova" (a new star) and "Pulse" (the heartbeat of the markets), 
-            symbolizing our mission to bring fresh energy to wealth creation.
+            NovaPulse was born from a simple belief: investing and trading should be accessible, 
+            intuitive, and transparent for everyone. We built this platform to eliminate complexity 
+            and empower retail investors with professional-grade tools at their fingertips.
           </p>
           <p>
-            Today, our disruptive pricing models and in-house technology have
-            made us the biggest stock broker in India.
+            Our name combines "Nova" (a new star in the sky) and "Pulse" (the heartbeat of the markets), 
+            representing our commitment to bringing fresh innovation and real-time market connectivity to traders everywhere.
           </p>
           <p>
-            Over 1.6+ crore clients place billions of orders every year through
-            our powerful ecosystem of investment platforms, contributing over
-            15% of all Indian retail trading volumes.
+            We believe that technology should work for you, not against you. That's why NovaPulse features 
+            real-time price updates, instant order execution, and comprehensive portfolio analytics—all 
+            designed with the modern trader in mind.
           </p>
         </div>
         <div className="col-lg-6 p-4">
           <p>
-            In addition, we run a number of popular open online educational and
-            community initiatives to empower retail traders and investors.
-          </p>
-
-          <p>
-            <a href="">Rainmatter</a>, our fintech fund and incubator, has invested in several
-            fintech startups with the goal of growing the Indian capital
-            markets.
+            <strong>Our Core Values:</strong>
           </p>
           <p>
-            And yet, we are always up to something new every day. Catch up on
-            the latest updates on our blog or see what the media is saying about
-            us or learn more about our business and product philosophies.
+            <strong>Transparency:</strong> You always know exactly what you're paying and why. No hidden charges, no surprises.
+          </p>
+          <p>
+            <strong>Innovation:</strong> We leverage cutting-edge technologies like WebSockets for real-time data, 
+            secure payment processing, and intelligent order management systems.
+          </p>
+          <p>
+            <strong>Security:</strong> Your funds and data are protected with enterprise-grade encryption, 
+            bcrypt password hashing, and secure trading PIN protection.
+          </p>
+          <p>
+            <strong>Education:</strong> We're committed to helping traders make informed decisions through 
+            clear analytics, historical data visualization, and continuous platform improvements.
           </p>
         </div>
       </div>

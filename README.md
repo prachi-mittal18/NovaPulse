@@ -389,23 +389,7 @@ Dashboard runs on `http://localhost:3000`
 }
 ```
 
----
 
-## 🐛 Known Issues & Troubleshooting
-
-### Issue: "Invalid Trading PIN" on withdrawal
-**Solution**: Reset your PIN via Profile → Set Trading PIN. This ensures consistent format.
-
-### Issue: Real-time prices not updating
-**Solutions**:
-- Check Angel One API credentials in `.env`
-- Verify WebSocket connection in browser console
-- Fallback mock data will be used if live data unavailable
-
-### Issue: CORS errors
-**Solution**: Ensure `FRONTEND_URLS` in backend `.env` includes your frontend URL
-
----
 
 ## 📈 Performance Optimizations
 
@@ -460,7 +444,7 @@ Contributions are welcome! To contribute:
 
 For issues, questions, or suggestions:
 - Open an issue on GitHub
-- Email: prachi.mittal@example.com
+- Email: mittalprachi18@gmail.com
 - Check documentation in `/docs` folder
 
 ---

@@ -74,7 +74,10 @@ const PortfolioAnalytics = () => {
   return (
     <div className="analytics-page" style={{ padding: "20px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
       <div className="card" style={{ gridColumn: "span 2", padding: "20px", backgroundColor: "#fff", borderRadius: "8px", minHeight: "350px" }}>
-        <h4>7-Day P&L Trend</h4>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+          <h4 style={{ margin: 0 }}>7-Day P&L Trend</h4>
+          <span style={{ fontSize: "0.75rem", color: "#999", backgroundColor: "#f5f5f5", padding: "4px 8px", borderRadius: "4px" }}>Simulated Data</span>
+        </div>
         {isTrendLoading ? <Skeleton variant="rectangular" height={250} /> : trendData.data.length > 0 ? (
           <div style={{ height: "250px" }}>
             <LineChart data={{

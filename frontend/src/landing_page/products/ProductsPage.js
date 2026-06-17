@@ -4,7 +4,7 @@ import Hero from "./Hero";
 import LeftImageSection from "./LeftImageSection";
 import RightImageSection from "./RightImageSection";
 import Universe from "./Universe";
-import Footer from "../Footer";
+import Footer from "../footer";
 
 function ProductsPage() {
   return (
@@ -13,8 +13,8 @@ function ProductsPage() {
 
       <LeftImageSection
         imageURL="/media/kite.png"
-        productName="Pulse"
-        productDescription="Our ultra-fast flagship trading platform with streaming market data, advanced charts, an elegant UI, and more. Enjoy the Pulse experience seamlessly on your Android and iOS devices."
+        productName="Pulse Dashboard"
+        productDescription="Our flagship web-based trading platform with real-time market data, advanced charting, portfolio analytics, and intelligent order management. Experience professional-grade trading with an intuitive, modern interface designed for both beginners and experienced traders."
         tryDemo=""
         learnMore=""
         googlePlay=""
@@ -23,15 +23,15 @@ function ProductsPage() {
 
       <RightImageSection
         imageURL="/media/console.png"
-        productName="Nexus"
-        productDescription="The central dashboard for your NovaPulse account. Gain insights into your trades and investments with in-depth reports and visualisations."
+        productName="Portfolio Manager"
+        productDescription="The central hub for managing all your investments. Track your holdings in real-time, analyze P&L trends over 7 days, monitor margin usage, and manage your wallet all in one place. Get comprehensive insights into your investment performance."
         learnMore=""
       />
 
       <LeftImageSection
         imageURL="/media/coin.png"
-        productName="Orbit"
-        productDescription="Buy direct mutual funds online, commission-free, delivered directly to your Demat account. Enjoy the investment experience on your Android and iOS devices."
+        productName="Smart Orders"
+        productDescription="Execute trades with precision using our advanced order types. Support for Market Orders (instant execution) and Limit Orders (price-based execution). Automatic order management with real-time status tracking and execution notifications."
         tryDemo=""
         learnMore=""
         googlePlay=""
@@ -39,8 +39,8 @@ function ProductsPage() {
       />
       <RightImageSection
       imageURL="/media/kiteconnect.png"
-        productName="Pulse Connect API"
-        productDescription="Build powerful trading platforms and experiences with our super simple HTTP/JSON APIs. If you are a startup, build your investment app and showcase it to our clientbase."
+        productName="Trading API"
+        productDescription="Build custom trading applications with our RESTful API. Seamless integration for order placement, portfolio management, and market data access. Perfect for developers, algo traders, and fintech entrepreneurs building on top of NovaPulse."
         learnMore=""
          />
 
@@ -48,15 +48,15 @@ function ProductsPage() {
 
       <LeftImageSection
         imageURL="/media/varsity.png"
-        productName="Academy Mobile"
-        productDescription="An easy to grasp, collection of stock market lessons with in-depth coverage and illustrations. Content is broken down into bite-size cards to help you learn on the go."
+        productName="Learning Platform"
+        productDescription="Master stock market investing with our comprehensive learning hub. From market fundamentals to advanced trading strategies, we provide bite-sized lessons, tutorials, and real-world examples to help you become a smarter investor."
         tryDemo=""
         learnMore=""
         googlePlay=""
         appStore=""
       />
       <p className="text-center" style={{ color: '#9a9ab0' }}>
-        Want to know more about our technology stack? Check out the <a href="">NovaPulse.tech </a>blog.
+        Want to know more about our technology stack? Check out our <a href="">Tech Blog</a>.
       </p>
 
       <Universe />

@@ -10,5 +10,9 @@ const HoldingsSchema = new Schema({
   qty: Number,
   avg: Number,
   price: Number,
+  openingPrice: {
+    type: Number,
+    default: null, // Will be updated from Angel One on startup
+  },
 });
 module.exports = { HoldingsSchema };
