@@ -10,6 +10,7 @@ const axios = require("axios");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
+
 const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
 const { OrdersModel } = require("./model/OrdersModel");
@@ -203,10 +204,12 @@ const tokenKey = process.env.TOKEN_KEY;
 
 const app = express();
 const server = http.createServer(app);
+const allowedOrigins = [
+  'https://novapulse-frontend.vercel.app',
+  'https://nova-pulse-eight.vercel.app'
+];
 
-const allowedOrigins = process.env.FRONTEND_URLS 
-  ? process.env.FRONTEND_URLS.split(",") 
-  : ["http://localhost:3000", "http://localhost:3001"];
+
 
 const io = new Server(server, {
   cors: {
@@ -222,9 +225,19 @@ const paymentRoute = require("./Routes/PaymentRoute");
 const { userVerification } = require("./Middlewares/AuthMiddleware");
 
 app.use(cors({
-  origin: allowedOrigins,
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, or postman)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Allows cookies/auth headers if you use them
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // ADD this block
