@@ -7,6 +7,8 @@ const http = require("http");
 const { Server } = require("socket.io");
 const AngelOneService = require("./services/AngelOneService");
 const axios = require("axios");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 
 const { HoldingsModel } = require("./model/HoldingsModel");
 const { PositionsModel } = require("./model/PositionsModel");
@@ -225,10 +227,24 @@ app.use(cors({
   credentials: true,
 }));
 
+// ADD this block
+app.use(helmet());
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,                   // max 20 login/signup attempts per window
+  message: { message: "Too many attempts, please try again later.", success: false },
+});
+const orderLimiter = rateLimit({
+  windowMs: 60 * 1000,       // 1 minute
+  max: 30,                   // max 30 orders per minute per IP
+  message: { message: "Order rate limit exceeded.", success: false },
+});
+
 app.use(cookieParser());
 app.use(express.json());
 
-app.use("/", authRoute);
+app.use("/",authLimiter ,authRoute);
 app.use("/api/payments", paymentRoute);
 
 app.get("/api/market-indices", (req, res) => {
@@ -418,7 +434,7 @@ app.get("/user/funds", userVerification, async (req, res) => {
   }
 });
 
-app.post("/newOrder", userVerification, async (req, res) => {
+app.post("/newOrder",orderLimiter, userVerification, async (req, res) => {
   try {
     const user = await UserModel.findById(req.user.id);
     

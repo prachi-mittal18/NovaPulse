@@ -13,7 +13,7 @@ const TopBar = () => {
   useEffect(() => {
     const fetchBaselines = async () => {
       try {
-        const res = await axios.get("http://localhost:3002/api/market-indices", { withCredentials: true });
+        const res = await axios.get(`${process.env.REACT_APP_API_URL || "http://localhost:3002"}/api/market-indices`, { withCredentials: true });
         setOpeningValues(res.data);
       } catch (err) { console.error("Failed to fetch index baselines", err); }
     };
