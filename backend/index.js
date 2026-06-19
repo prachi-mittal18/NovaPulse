@@ -241,16 +241,30 @@ app.use(cors({
 }));
 
 // ADD this block
+// app.use(helmet());
+
+// const authLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutes
+//   max: 20,                   // max 20 login/signup attempts per window
+//   message: { message: "Too many attempts, please try again later.", success: false },
+// });
+// const orderLimiter = rateLimit({
+//   windowMs: 60 * 1000,       // 1 minute
+//   max: 30,                   // max 30 orders per minute per IP
+//   message: { message: "Order rate limit exceeded.", success: false },
+// });
+
 app.use(helmet());
 
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,                   // max 20 login/signup attempts per window
+  windowMs: 1 * 60 * 1000, // Drop this down to just 1 minute
+  max: 500,                // Give yourself 500 requests so you never get blocked while debugging
   message: { message: "Too many attempts, please try again later.", success: false },
 });
+
 const orderLimiter = rateLimit({
   windowMs: 60 * 1000,       // 1 minute
-  max: 30,                   // max 30 orders per minute per IP
+  max: 500,                  // Bump this up to 500 as well for development
   message: { message: "Order rate limit exceeded.", success: false },
 });
 
