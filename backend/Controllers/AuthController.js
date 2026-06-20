@@ -20,7 +20,7 @@ module.exports.Signup = async (req, res, next) => {
     res.cookie("token", token, {
         httpOnly: true,
         sameSite: "none",
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         path: "/",
       });
     // Remove sensitive data before sending
@@ -59,7 +59,7 @@ module.exports.Login = async (req, res, next) => {
        res.cookie("token", token, {
         httpOnly: true,
         sameSite: "none",
-        secure: process.env.NODE_ENV === "production",
+        secure: true,
         path: "/",
       });
        return res.status(200).json({ 
@@ -77,7 +77,7 @@ res.cookie("token", "", {
   httpOnly: true,
   expires: new Date(0),
   sameSite: "none",       // ← changed (cross-origin deployments need "none")
-  secure: process.env.NODE_ENV === "production",  // ← changed
+   secure: true,
   path: "/",
   });
   return res.status(200).json({ message: "Logged out successfully", success: true });
