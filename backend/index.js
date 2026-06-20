@@ -208,8 +208,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = (process.env.FRONTEND_URLS || "http://localhost:3001,http://localhost:3000")
   .split(",")
-  .map(url => url.trim().replace(/\/$/, "")); // also strips trailing slashes
-
+  .map(url => url.trim().replace(/\/$/, ""));
 
 
 const io = new Server(server, {
