@@ -203,11 +203,12 @@ const url = process.env.MONGO_URL;
 const tokenKey = process.env.TOKEN_KEY;
 
 const app = express();
+app.set('trust proxy', 1); // ADD THIS LINE — required on Render
 const server = http.createServer(app);
-const allowedOrigins = [
-  'https://novapulse-frontend.vercel.app',
-  'https://nova-pulse-eight.vercel.app'
-];
+
+const allowedOrigins = (process.env.FRONTEND_URLS || "http://localhost:3001,http://localhost:3000")
+  .split(",")
+  .map(url => url.trim().replace(/\/$/, "")); // also strips trailing slashes
 
 
 
@@ -237,7 +238,7 @@ app.use(cors({
   },
   credentials: true, // Allows cookies/auth headers if you use them
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+ allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 
 // ADD this block
@@ -253,8 +254,11 @@ app.use(cors({
 //   max: 30,                   // max 30 orders per minute per IP
 //   message: { message: "Order rate limit exceeded.", success: false },
 // });
-
-app.use(helmet());
+app.use(helmet({
+  crossOriginOpenerPolicy: false,
+  crossOriginResourcePolicy: false,
+  contentSecurityPolicy: false,
+}));
 
 const authLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // Drop this down to just 1 minute
