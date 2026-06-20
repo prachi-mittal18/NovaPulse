@@ -111,3 +111,19 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 15px rgba(99, 102, 241, 0.3);
 }
+
+@media (max-width: 768px) {
+  .buy-window-container {
+    width: 95%;
+    height: auto;
+    max-height: 80vh;
+    left: 2.5%;
+    bottom: 0;
+    overflow-y: auto;
+  }
+
+  .regular-order {
+    padding: 16px;
+    padding-bottom: 20px;
+  }
+}
