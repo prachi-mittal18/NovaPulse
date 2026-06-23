@@ -53,10 +53,10 @@ function Footer() {
 
         <div className="footer-legal pt-4 mt-4" style={{ borderTop: '1px solid var(--border)', fontSize: '0.75rem', lineHeight: '1.6' }}>
           <p className="text-muted mb-4">
-            NovaPulse Broking Ltd.: Member of NSE, BSE & MCX – SEBI Registration no.: INZ000031633. CDSL/NSDL: Depository services through NovaPulse Broking Ltd. – SEBI Registration no.: IN-DP-431-2019. Registered Address: NovaPulse Broking Ltd., Bengaluru, India.
+            NovaPulse is a full-stack stock trading simulation platform built as a portfolio project. It demonstrates real-time market data integration, order management, payment processing, and modern web technologies. This is not a registered brokerage — no real trades are executed.
           </p>
           <p className="text-muted mb-0">
-            Investments in securities market are subject to market risks; read all the related documents carefully before investing.
+            Built with React, Node.js, MongoDB, Socket.io &amp; Angel One API.
           </p>
         </div>
       </div>

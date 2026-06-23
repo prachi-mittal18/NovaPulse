@@ -2,6 +2,9 @@ const { UserModel } = require("../model/UserModel");
 const { createSecretToken } = require("../util/SecretToken");
 const bcrypt = require("bcryptjs");
 
+
+
+//signup controller
 module.exports.Signup = async (req, res, next) => {
   try {
     const { email, password, username, createdAt } = req.body;
@@ -16,6 +19,7 @@ module.exports.Signup = async (req, res, next) => {
       createdAt,
       balance: 100000 // Starting balance for new users
     });
+
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
         httpOnly: true,
@@ -23,6 +27,8 @@ module.exports.Signup = async (req, res, next) => {
         secure: true,
         path: "/",
       });
+
+
     // Remove sensitive data before sending
     const userResponse = user.toObject();
     delete userResponse.password;
@@ -35,6 +41,8 @@ module.exports.Signup = async (req, res, next) => {
   }
 };
 
+
+//login controller
 module.exports.Login = async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -72,6 +80,9 @@ module.exports.Login = async (req, res, next) => {
     }
   }
 
+
+
+  //logout controller
 module.exports.Logout = (req, res) => {
 res.cookie("token", "", {
   httpOnly: true,
