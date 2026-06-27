@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 function Hero() {
-    const [activeUsers, setActiveUsers] = useState("1.6Cr+");
+    const [activeUsers, setActiveUsers] = useState("20+");
 
     useEffect(() => {
         const fetchPlatformStats = async () => {

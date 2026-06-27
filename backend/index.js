@@ -1,742 +1,103 @@
+// backend/index.js  ← NOW ONLY ~70 LINES
+
 require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const http = require("http");
-const { Server } = require("socket.io");
-const AngelOneService = require("./services/AngelOneService");
-const axios = require("axios");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
 
-
-const { HoldingsModel } = require("./model/HoldingsModel");
-const { PositionsModel } = require("./model/PositionsModel");
-const { OrdersModel } = require("./model/OrdersModel");
-const { UserModel } = require("./model/UserModel");
-const PORT = process.env.PORT || 3002;
-
-/**
- * Configuration & Helpers
- */
-
-// Helper functions for safe financial math using scaled integers (cents/paise)
-const toCents = (amount) => Math.round(Number(amount) * 100);
-const fromCents = (cents) => Number((cents / 100).toFixed(2));
-
-// Helper function to format user count to Indian number system (e.g., "16 L" for 1.6 crore)
-const formatUserCount = (count) => {
-  if (count >= 10000000) { // >= 1 crore
-    return (count / 10000000).toFixed(1) + " Cr+";
-  } else if (count >= 100000) { // >= 1 lakh
-    return (count / 100000).toFixed(1) + " L";
-  } else if (count >= 1000) {
-    return (count / 1000).toFixed(1) + "K";
-  }
-  return count.toString();
-};
-
-
-// Mapping internal tickers to Angel One NSE Symbols/Tokens
-// Note: These are verified NSE token mappings for Angel One API
-// Reference: Angel One SmartAPI token list
-const watchlistMap = {
-  // BANKING SECTOR (6 stocks)
-  "HDFCBANK": "1333",
-  "ICICIBANK": "4963",
-  "SBIN": "3045",
-  "AXISBANK": "5900",
-  "KOTAKBANK": "1922",
-  "INDUSIND": "5258",
-
-  // IT SECTOR (5 stocks)
-  "TCS": "3456",
-  "INFY": "1594",
-  "WIPRO": "3787",
-  "HCLTECH": "7229",  
-  "TECHM": "13538",    
-
-  // ENERGY & INFRASTRUCTURE (5 stocks)
-  "RELIANCE": "2885",
-  "LT": "11483",
-  "POWERGRID": "14977",  
-  "NTPC": "11630",       
-  "JSWSTEEL": "11723",    
-
-  // PHARMA & HEALTHCARE (4 stocks)
-  "SUNPHARMA": "3351",
-  "CIPLA": "694",
-  "BAJAJHLTCARE": "6863",
-  "LUPIN": "1424",
-
-  // CONSUMER & FMCG (5 stocks)
-  "HINDUNILVR": "1330",
-  "ITC": "1660",
-  "NESTLEIND": "17963",    // Should be live
-  "BRITANNIA": "547",
-  "COLPAL": "15141",
-
-  // AUTO SECTOR (3 stocks)
-  "MARUTI": "10999",
-  "HEROMOTOCO": "1348",
-  "BAJAJFINSV": "16675",
-
-  // TELECOM & UTILITIES (2 stocks)
-  "BHARTIARTL": "10604",
-  "VODAFONE": "14366"
-};
-
-// Angel One Index Tokens
-const indexMap = {
-  "NIFTY 50": { token: "99926000", exchange: "NSE" }, // Official NSE Scrip Token
-  "SENSEX": { token: "99919000", exchange: "BSE" }   // Official BSE Scrip Token
-};
-
-// Simulated Live Price Ticker initialization
-let currentPrices = {};
-let openingPrices = { "NIFTY 50": 23000.45, "SENSEX": 75000.85 };
-const lastLiveUpdate = {};
-const basePrices = { 
-  "NIFTY 50": 23000.45, "SENSEX": 75000.85,
-  // Banking Sector
-  "HDFCBANK": 1600.00, "ICICIBANK": 1120.00, "SBIN": 830.00, 
-  "AXISBANK": 1180.00, "KOTAKBANK": 1920.00, "INDUSIND": 1420.00,
-  // IT Sector
-  "TCS": 3850.00, "INFY": 1560.00, "WIPRO": 480.00, 
-  "HCLTECH": 1150.00,  // Updated: realistic current price
-  "TECHM": 1180.00,    // Updated: realistic current price
-  // Energy & Infrastructure
-  "RELIANCE": 2950.00, "LT": 3550.00, "POWERGRID": 285.00, 
-  "NTPC": 355.00,
-  "JSWSTEEL": 850.00,
-  // Pharma & Healthcare
-  "SUNPHARMA": 1510.00, "CIPLA": 1425.00, "BAJAJHLTCARE": 525.00, 
-  "LUPIN": 865.00,
-  // Consumer & FMCG
-  "HINDUNILVR": 2450.00, "ITC": 430.00, "NESTLEIND": 21500.00, 
-  "BRITANNIA": 4720.00, "COLPAL": 1825.00,
-  // Auto Sector
-  "MARUTI": 9850.00, "HEROMOTOCO": 3580.00, "BAJAJFINSV": 1620.00,
-  // Telecom & Utilities
-  "BHARTIARTL": 1420.00, "VODAFONE": 15.00
-};
-
-["NIFTY 50", "SENSEX", ...Object.keys(watchlistMap)].forEach(ticker => {
-  // Initialize with base price, never default to 0.0
-  currentPrices[ticker] = fromCents(toCents(basePrices[ticker] || 100.00));
-});
-
-/**
- * Fetches current prices for all symbols from the REST API to ensure 
- * the dashboard has live data immediately upon startup, before the 
- * first WebSocket trade event occurs.
- */
-const fetchInitialQuotes = async () => {
-  if (!process.env.ANGEL_ONE_API_KEY) return;
-  
-  const nseTokens = [...new Set(Object.values(watchlistMap)), indexMap["NIFTY 50"].token];
-  const bseTokens = [indexMap["SENSEX"].token];
-
-  console.log(`[${new Date().toISOString()}] INFO: Syncing initial prices with Angel One REST API...`);
-  
-  try {
-    // Mode "OHLC" provides both the LTP and the Open price
-    // Mode "OHLC" provides both the LTP and the Open price
-    const exchanges = [
-      { name: "NSE", tokens: nseTokens },
-      { name: "BSE", tokens: bseTokens }
-    ];
-
-    for (const exch of exchanges) {
-      const response = await angelOne.smartApi.marketData({
-        mode: "OHLC",
-        exchangeTokens: { [exch.name]: exch.tokens }
-      });
-
-      if (response?.status && response?.data?.fetched) {
-        for (const item of response.data.fetched) {
-          const livePrice = Number(item.ltp);
-          const openPrice = Number(item.open);
-
-          // Handle Indices
-          const indexName = Object.keys(indexMap).find(name => indexMap[name].token === item.symbolToken);
-          if (indexName) {
-            currentPrices[indexName] = livePrice;
-            openingPrices[indexName] = openPrice;
-            continue;
-          }
-
-          // Handle Stocks
-          const internalTickers = Object.keys(watchlistMap).filter(t => watchlistMap[t] === item.symbolToken);
-          for (const ticker of internalTickers) {
-            currentPrices[ticker] = livePrice;
-            // Also update opening prices in holdings
-            await HoldingsModel.updateMany(
-              { name: ticker }, 
-              { $set: { price: livePrice, openingPrice: openPrice } }
-            )
-              .catch(e => console.error(`[${new Date().toISOString()}] ERROR: Startup DB sync failed for ${ticker}:`, e.message));
-          }
-        }
-      }
-      // Throttle to respect rate limits
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-  } catch (error) {
-    console.warn(`[${new Date().toISOString()}] WARN: Initial quote fetch failed:`, error.message);
-  }
-  console.log(`[${new Date().toISOString()}] INFO: Initial price sync complete.`);
-};
-
-// Normalize process.env to handle spaces in keys or values from manual .env edits
+// Normalize .env keys/values (handles accidental spaces)
 Object.keys(process.env).forEach((key) => {
   const trimmedKey = key.trim();
   const value = process.env[key] ? process.env[key].trim() : "";
-  if (trimmedKey !== key) {
-    delete process.env[key];
-  }
+  if (trimmedKey !== key) delete process.env[key];
   process.env[trimmedKey] = value;
 });
 
-const url = process.env.MONGO_URL;
+const express      = require("express");
+const http         = require("http");
+const cors         = require("cors");
+const cookieParser = require("cookie-parser");
+const helmet       = require("helmet");
+const rateLimit    = require("express-rate-limit");
+
+const { connectDB }        = require("./config/db");
+const { createSocketServer } = require("./config/socketConfig");
+const { startPriceSimulation, fetchInitialQuotes } = require("./services/priceEngine");
+const { processPendingOrders } = require("./services/orderEngine");
+const { setConnected }     = require("./services/angelOneState");
+const AngelOneService      = require("./services/AngelOneService");
+const { watchlistMap }     = require("./constants/marketData");
+
+const authRoute    = require("./Routes/AuthRoute");
+const paymentRoute = require("./Routes/PaymentRoute");
+const marketRoute  = require("./Routes/MarketRoute");
+const orderRoute   = require("./Routes/OrderRoute");
+
+const PORT = process.env.PORT || 3002;
+const url  = process.env.MONGO_URL;
 const tokenKey = process.env.TOKEN_KEY;
 
-const app = express();
-app.set('trust proxy', 1); // ADD THIS LINE — required on Render
-const server = http.createServer(app);
+if (!url)      { console.error("FATAL: MONGO_URL not defined"); process.exit(1); }
+if (!tokenKey) { console.error("FATAL: TOKEN_KEY not defined"); process.exit(1); }
 
 const allowedOrigins = (process.env.FRONTEND_URLS || "http://localhost:3001,http://localhost:3000")
-  .split(",")
-  .map(url => url.trim().replace(/\/$/, ""));
+  .split(",").map(u => u.trim().replace(/\/$/, ""));
 
+const app    = express();
+app.set("trust proxy", 1);
+const server = http.createServer(app);
+const io     = createSocketServer(server, allowedOrigins);
 
-const io = new Server(server, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ["GET", "POST"],
-    credentials: true,
-  },
-});
-
-const cookieParser = require("cookie-parser");
-const authRoute = require("./Routes/AuthRoute");
-const paymentRoute = require("./Routes/PaymentRoute");
-const { userVerification } = require("./Middlewares/AuthMiddleware");
-
+// Middleware
+app.use(helmet({ crossOriginOpenerPolicy: false, crossOriginResourcePolicy: false, contentSecurityPolicy: false }));
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, or postman)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true, // Allows cookies/auth headers if you use them
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
- allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
+  origin: (origin, cb) => (!origin || allowedOrigins.includes(origin)) ? cb(null, true) : cb(new Error("Not allowed by CORS")),
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
 }));
-
-// ADD this block
-// app.use(helmet());
-
-// const authLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000, // 15 minutes
-//   max: 20,                   // max 20 login/signup attempts per window
-//   message: { message: "Too many attempts, please try again later.", success: false },
-// });
-// const orderLimiter = rateLimit({
-//   windowMs: 60 * 1000,       // 1 minute
-//   max: 30,                   // max 30 orders per minute per IP
-//   message: { message: "Order rate limit exceeded.", success: false },
-// });
-app.use(helmet({
-  crossOriginOpenerPolicy: false,
-  crossOriginResourcePolicy: false,
-  contentSecurityPolicy: false,
-}));
-
-const authLimiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // Drop this down to just 1 minute
-  max: 500,                // Give yourself 500 requests so you never get blocked while debugging
-  message: { message: "Too many attempts, please try again later.", success: false },
-});
-
-const orderLimiter = rateLimit({
-  windowMs: 60 * 1000,       // 1 minute
-  max: 500,                  // Bump this up to 500 as well for development
-  message: { message: "Order rate limit exceeded.", success: false },
-});
-
 app.use(cookieParser());
 app.use(express.json());
 
-app.use("/",authLimiter ,authRoute);
+const authLimiter = rateLimit({ windowMs: 60 * 1000, max: 500, message: { message: "Too many attempts.", success: false } });
+
+// Routes
+app.use("/", authLimiter, authRoute);
 app.use("/api/payments", paymentRoute);
+app.use("/", marketRoute);
+app.use("/", orderRoute);
 
-app.get("/api/market-indices", (req, res) => {
-  res.status(200).json(openingPrices);
-});
+// Angel One WebSocket
+const uniqueSymbols = [...new Set(Object.values(watchlistMap))];
+const { getCurrentPrices, lastLiveUpdate } = require("./services/priceEngine");
+const { toCents, fromCents } = require("./util/financialMath");
 
-app.get("/api/price-diagnostics", (req, res) => {
-  // Diagnostic endpoint to identify which stocks have/haven't received live updates
-  const diagnostics = {
-    lastUpdated: new Date().toISOString(),
-    angelOneConnected: isAngelOneConnected,
-    stocks: {}
-  };
-  
-  Object.keys(watchlistMap).forEach(ticker => {
-    const token = watchlistMap[ticker];
-    const lastUpdate = lastLiveUpdate[ticker] || 0;
-    const timeSinceLastUpdate = lastUpdate > 0 ? Date.now() - lastUpdate : -1;
-    
-    diagnostics.stocks[ticker] = {
-      currentPrice: currentPrices[ticker] || 0,
-      token: token,
-      lastLiveUpdate: new Date(lastUpdate).toISOString(),
-      isLive: timeSinceLastUpdate >= 0 && timeSinceLastUpdate < 60000, // Within last 60 seconds
-      timeSinceLastUpdateMs: timeSinceLastUpdate
-    };
-  });
-  
-  res.status(200).json(diagnostics);
-});
-
-app.get("/api/platform-stats", async (req, res) => {
-  try {
-    const activeUserCount = await UserModel.countDocuments();
-    res.status(200).json({
-      success: true,
-      activeUsers: activeUserCount,
-      formattedUsers: formatUserCount(activeUserCount)
-    });
-  } catch (error) {
-    console.error(`[${new Date().toISOString()}] ERROR: Failed to fetch platform stats:`, error);
-    res.status(500).json({ 
-      success: false, 
-      message: "Error fetching platform stats",
-      activeUsers: 0
-    });
-  }
-});
-
-app.get("/allHoldings", userVerification, async (req, res) => {
-  try {
-    const allHoldings = await HoldingsModel.find({ user: req.user.id });
-    return res.status(200).json(allHoldings);
-  } catch (error) {
-    console.error(`[${new Date().toISOString()}] ERROR: Failed to fetch holdings for user ${req.user.id}:`, error);
-    return res.status(500).json({ message: "Error fetching holdings", success: false });
-  }
-});
-
-app.get("/allPositions", userVerification, async (req, res) => {
-  try {
-    const allPositions = await PositionsModel.find({ user: req.user.id });
-    return res.status(200).json(allPositions);
-  } catch (error) {
-    console.error(`[${new Date().toISOString()}] ERROR: Failed to fetch positions for user ${req.user.id}:`, error);
-    return res.status(500).json({ message: "Error fetching positions", success: false });
-  }
-});
-
-app.get("/user/pnl-trend", userVerification, async (req, res) => {
-  try {
-    const holdings = await HoldingsModel.find({ user: req.user.id });
-    if (!holdings.length) return res.status(200).json({ labels: [], data: [] });
-
-    // Format to YYYY-MM-DD HH:MM
-    const formatDate = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day} 09:15`;
-    };
-
-    const toDateObj = new Date();
-    const fromDateObj = new Date();
-    fromDateObj.setDate(fromDateObj.getDate() - 10);
-
-    const fromdate = formatDate(fromDateObj);
-    const todate = formatDate(toDateObj);
-    const trendMap = {}; 
-
-    const dates = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      dates.push(d.toISOString().split('T')[0]);
-    }
-
-    let fallbackTriggered = false;
-
-    for (const stock of holdings) {
-      // Throttle: Wait 350ms between requests to stay under 3req/sec limit
-      await new Promise(resolve => setTimeout(resolve, 350));
-
-      const symboltoken = watchlistMap[stock.name];
-      if (!symboltoken) {
-        fallbackTriggered = true;
-        continue;
-      }
-      try {
-        const response = await angelOne.smartApi.getCandleData({
-          exchange: "NSE",
-          symboltoken,
-          interval: "DAY",
-          fromdate,
-          todate
-        });
-
-        if (!response || !response.status || !response.data || response.data.length === 0) {
-          throw new Error("No data returned from Angel One");
-        }
-
-        response.data.forEach((candle) => {
-          const date = candle[0].split('T')[0];
-          const price = Number(candle[4]);
-          const pnl = (price - stock.avg) * stock.qty;
-          trendMap[date] = (trendMap[date] || 0) + pnl;
-        });
-      } catch (e) { 
-        fallbackTriggered = true;
-        
-        const currentPrice = currentPrices[stock.name] || stock.avg;
-        const tickerHash = stock.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-
-        dates.forEach((date, i) => {
-          const variance = ((tickerHash * (i + 1)) % 40) / 1000;
-          const direction = (tickerHash % 2 === 0) ? 1 : -1;
-          const mockHistoricalPrice = currentPrice * (1 + (direction * variance));
-
-          const pnl = (mockHistoricalPrice - stock.avg) * stock.qty;
-          trendMap[date] = (trendMap[date] || 0) + pnl;
-        });
-      }
-    }
-
-    if (fallbackTriggered) {
-      console.info(`[${new Date().toISOString()}] INFO: P&L Trend generated using deterministic mock fallback.`);
-    }
-
-    const sortedDates = Object.keys(trendMap).sort().slice(-7);
-    const labels = sortedDates.map(d => new Date(d).toLocaleDateString([], { month: 'short', day: 'numeric' }));
-    const data = sortedDates.map(d => fromCents(toCents(trendMap[d])));
-
-    return res.status(200).json({ labels, data });
-  } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-});
-
-app.get("/allOrders", userVerification, async (req, res) => {
-  try {
-    const allOrders = await OrdersModel.find({ user: req.user.id }).sort({ createdAt: -1 });
-    return res.status(200).json(allOrders);
-  } catch (error) {
-    console.error(`[${new Date().toISOString()}] ERROR: Failed to fetch orders for user ${req.user.id}:`, error);
-    return res.status(500).json({ message: "Error fetching orders", success: false });
-  }
-});
-
-app.get("/user/funds", userVerification, async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.user.id);
-    const allHoldings = await HoldingsModel.find({ user: req.user.id });
-
-    // Calculate total investment (Margin Used) using safe financial math
-    const marginUsedCents = allHoldings.reduce((acc, holding) => {
-      return acc + (holding.qty * toCents(holding.avg));
-    }, 0);
-
-    return res.status(200).json({
-      balance: user.balance,
-      marginUsed: fromCents(marginUsedCents),
-      openingBalance: user.openingBalance || user.balance,
-    });
-  } catch (error) {
-    console.error(`[${new Date().toISOString()}] ERROR: Failed to fetch funds for user ${req.user.id}:`, error.message);
-    return res.status(500).json({ message: "Error fetching funds summary", success: false });
-  }
-});
-
-app.post("/newOrder",orderLimiter, userVerification, async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.user.id);
-    
-    // Canonicalize name: If HUL is sent, treat it as HINDUNILVR (the primary)
-    const canonicalName = (req.body.name === "HUL") ? "HINDUNILVR" : req.body.name;
-
-    const qty = Number(req.body.qty);
-    const priceCents = toCents(req.body.price);
-    const orderValueCents = qty * priceCents;
-
-    const userBalanceCents = toCents(user.balance);
-    const marketPrice = currentPrices[canonicalName] || req.body.price;
-    
-    let orderStatus = "COMPLETE";
-
-    // Price validation for Limit Orders
-    if (req.body.orderType === "LIMIT") {
-      if (req.body.mode === "BUY" && marketPrice > req.body.price) {
-        orderStatus = "PENDING";
-      } else if (req.body.mode === "SELL" && marketPrice < req.body.price) {
-        orderStatus = "PENDING";
-      }
-    }
-
-    const newOrder = new OrdersModel({
-      name: canonicalName,
-      qty: req.body.qty,
-      mode: req.body.mode,
-      price: req.body.price,
-      orderType: req.body.orderType || "MARKET",
-      status: orderStatus,
-      user: req.user.id, // Associate the order with the person who placed it
-    });
-
-    // --- Pre-Execution Validation: Validate funds/holdings before accepting order (Market or Limit) ---
-    if (req.body.mode === "BUY") {
-      if (userBalanceCents < orderValueCents) {
-        newOrder.status = "REJECTED";
-        await newOrder.save();
-        console.log(`[${new Date().toISOString()}] ORDER_REJECTED: User ${req.user.id} | BUY ${req.body.qty} ${req.body.name} - Insufficient funds`);
-        return res.status(400).json({ message: "Insufficient funds", success: false });
-      }
-    } else if (req.body.mode === "SELL") {
-      const existingHolding = await HoldingsModel.findOne({ user: req.user.id, name: canonicalName });
-      if (!existingHolding || existingHolding.qty < qty) {
-        newOrder.status = "REJECTED";
-        await newOrder.save();
-        console.log(`[${new Date().toISOString()}] ORDER_REJECTED: User ${req.user.id} | SELL ${qty} ${canonicalName} - Insufficient quantity`);
-        return res.status(400).json({ message: "Insufficient quantity to sell", success: false });
-      }
-    }
-
-    if (orderStatus === "PENDING") {
-      await newOrder.save();
-      return res.status(201).json({ 
-        message: "Limit order placed. Status: PENDING", 
-        success: true 
-      });
-    }
-
-    // Logic to update Holdings based on the order
-    if (req.body.mode === "BUY") {
-      await newOrder.save(); // Saves as COMPLETE
-
-      const existingHolding = await HoldingsModel.findOne({ 
-        user: req.user.id, 
-        name: canonicalName 
-      });
-
-      // Safely subtract balance in cents
-      user.balance = fromCents(userBalanceCents - orderValueCents);
-      await user.save();
-
-      if (existingHolding) {
-        const totalQty = existingHolding.qty + qty;
-      
-        // new avg = ((old qnty * old avg) + (new qnty * new avg)) / total qnty
-        const existingAvgCents = toCents(existingHolding.avg);
-        const newAvgCents = Math.round(((existingHolding.qty * existingAvgCents) + (qty * priceCents)) / totalQty);
-        
-        existingHolding.qty = totalQty;
-        existingHolding.avg = fromCents(newAvgCents);
-        await existingHolding.save();
-      } else {
-        await HoldingsModel.create({
-          name: canonicalName,
-          qty: req.body.qty,
-          avg: req.body.price,
-          price: req.body.price, // Market price at time of buy
-          user: req.user.id,
-          net: "0%",
-          day: "0%"
-        });
-      }
-    } else if (req.body.mode === "SELL") {
-      const existingHolding = await HoldingsModel.findOne({ 
-        user: req.user.id, 
-        name: canonicalName 
-      });
-
-      await newOrder.save(); // Saves as COMPLETE
-      user.balance = fromCents(userBalanceCents + orderValueCents);
-      await user.save();
-
-      const totalQty = existingHolding.qty - qty;
-      
-      if (totalQty === 0) {
-        await HoldingsModel.deleteOne({ _id: existingHolding._id });
-      } else {
-        existingHolding.qty = totalQty;
-        await existingHolding.save();
-      }
-    }
-
-    console.log(`[${new Date().toISOString()}] ORDER_COMPLETE: User ${req.user.id} | ${req.body.mode} ${req.body.qty} ${req.body.name} at ${req.body.price} (${req.body.orderType})`);
-    return res.status(201).json({ message: "Order saved successfully", success: true });
-  } catch (error) {
-    console.error(`[${new Date().toISOString()}] ERROR: Failed to process newOrder for user ${req.user.id}:`, error.message);
-    return res.status(500).json({ message: "Failed to save order", success: false });
-  }
-});
-
-const processPendingOrders = async (targetTicker = null) => {
-  try {
-    const query = { status: "PENDING" };
-    if (targetTicker) query.name = targetTicker;
-
-    const pendingOrders = await OrdersModel.find(query);
-
-    for (const pendingOrder of pendingOrders) {
-      // Task 7: Atomic Lock to prevent concurrent processing (Race Condition Protection)
-      const order = await OrdersModel.findOneAndUpdate(
-        { _id: pendingOrder._id, status: "PENDING" },
-        { $set: { status: "PROCESSING" } },
-        { new: true }
-      );
-
-      if (!order) continue; // Order was already picked up by another process
-
-      const currentPrice = currentPrices[order.name];
-      if (currentPrice === undefined) {
-        await OrdersModel.updateOne({ _id: order._id }, { $set: { status: "PENDING" } });
-        continue;
-      }
-
-      let shouldExecute = false;
-      if (order.mode === "BUY" && currentPrice <= order.price) {
-        shouldExecute = true;
-      } else if (order.mode === "SELL" && currentPrice >= order.price) {
-        shouldExecute = true;
-      }
-
-      if (!shouldExecute) {
-        // Release lock if conditions not met
-        await OrdersModel.updateOne({ _id: order._id }, { $set: { status: "PENDING" } });
-        continue;
-      }
-
-      try {
-        const user = await UserModel.findById(order.user);
-        const priceCents = toCents(currentPrice);
-        const orderValueCents = order.qty * priceCents;
-        const userBalanceCents = toCents(user.balance);
-
-        if (order.mode === "BUY") {
-          if (userBalanceCents < orderValueCents) {
-            order.status = "REJECTED"; // Funds might have been spent elsewhere while pending
-            await order.save();
-            console.log(`[${new Date().toISOString()}] ORDER_REJECTED (Pending): User ${order.user} | BUY ${order.qty} ${order.name} - Insufficient funds at execution time (Order: ${order._id})`);
-            continue;
-          }
-
-          user.balance = fromCents(userBalanceCents - orderValueCents);
-          await user.save();
-
-          const existingHolding = await HoldingsModel.findOne({ user: order.user, name: order.name });
-          if (existingHolding) {
-            const totalQty = existingHolding.qty + order.qty;
-            const newAvgCents = Math.round(((existingHolding.qty * toCents(existingHolding.avg)) + (order.qty * priceCents)) / totalQty);
-            existingHolding.qty = totalQty;
-            existingHolding.avg = fromCents(newAvgCents);
-            await existingHolding.save();
-          } else {
-            await HoldingsModel.create({ name: order.name, qty: order.qty, avg: currentPrice, price: currentPrice, user: order.user });
-          }
-        } else if (order.mode === "SELL") {
-          const existingHolding = await HoldingsModel.findOne({ user: order.user, name: order.name });
-          if (!existingHolding || existingHolding.qty < order.qty) {
-            order.status = "REJECTED";
-            await order.save();
-            console.log(`[${new Date().toISOString()}] ORDER_REJECTED (Pending): User ${order.user} | SELL ${order.qty} ${order.name} - Insufficient quantity at execution time (Order: ${order._id})`);
-            continue;
-          }
-
-          user.balance = fromCents(userBalanceCents + orderValueCents);
-          await user.save();
-
-          if (existingHolding.qty === order.qty) {
-            await HoldingsModel.deleteOne({ _id: existingHolding._id });
-          } else {
-            existingHolding.qty -= order.qty;
-            await existingHolding.save();
-          }
-        }
-
-        order.status = "COMPLETE";
-        order.price = currentPrice; // Update to actual execution price
-        await order.save();
-        console.log(`[${new Date().toISOString()}] ORDER_COMPLETE (Pending): User ${order.user} | ${order.mode} ${order.qty} ${order.name} executed at ${currentPrice} (Order: ${order._id})`);
-      } catch (err) {
-        console.error(`[${new Date().toISOString()}] ERROR: Failed to execute order ${order._id}:`, err.message);
-        // Rollback status so it can be retried on next tick
-        await OrdersModel.updateOne({ _id: order._id }, { $set: { status: "PENDING" } });
-      }
-    }
-  } catch (err) {
-    console.error(`[${new Date().toISOString()}] ERROR: Error processing pending orders:`, err.message);
-  }
-};
-
-// --- Angel One WebSocket Integration ---
-let isAngelOneConnected = false;
-// Track pending batch emission to ensure io.emit is called exactly once per trade batch
 let batchEmitScheduled = false;
-// Track pending order processing per ticker to avoid DB spam on high-volume trade ticks
 const pendingTickerExecution = new Set();
 
-const handleTradeUpdate = async (token, price) => {
-  // Find all internal names mapped to this token
-  const internalTickers = Object.keys(watchlistMap).filter(key => watchlistMap[key] === token);
-  
-  if (internalTickers.length === 0) {
-    console.warn(`[${new Date().toISOString()}] WS_WARN: Received trade for unmapped token: ${token}`);
-    return;
-  }
-
+const handleTradeUpdate = (token, price) => {
   const priceCents = toCents(price);
-  const safePrice = fromCents(priceCents);
+  const safePrice  = fromCents(priceCents);
+  const internalTickers = Object.keys(watchlistMap).filter(k => watchlistMap[k] === token);
 
-  for (const ticker of internalTickers) {
-    currentPrices[ticker] = safePrice;
-    lastLiveUpdate[ticker] = Date.now(); // Mark as receiving live data
-    
-    // Log when a stock receives its first live update
-    if (!lastLiveUpdate[ticker]) {
-      console.log(`[${new Date().toISOString()}] LIVE_UPDATE: ${ticker} (${token}) = ₹${safePrice}`);
-    }
-    
-    // Debounce order processing per ticker: wait for the next tick to aggregate trades
+  internalTickers.forEach(ticker => {
+    getCurrentPrices()[ticker]  = safePrice;
+    lastLiveUpdate[ticker] = Date.now();
     if (!pendingTickerExecution.has(ticker)) {
       pendingTickerExecution.add(ticker);
-      setImmediate(() => {
+      setImmediate(() =>
         processPendingOrders(ticker)
-          .catch(err => console.error(`[${new Date().toISOString()}] ERROR: Order engine failed for ${ticker}:`, err.message))
-          .finally(() => pendingTickerExecution.delete(ticker));
-      });
+          .catch(err => console.error(`[ORDER_ENGINE] ${ticker}:`, err.message))
+          .finally(() => pendingTickerExecution.delete(ticker))
+      );
     }
-  }
+  });
 
-  // Batch emission: Schedule a single emit for all trades in this incoming packet
   if (!batchEmitScheduled) {
     batchEmitScheduled = true;
-    setImmediate(() => {
-      io.emit("priceUpdate", currentPrices);
-      batchEmitScheduled = false;
-    });
+    setImmediate(() => { io.emit("priceUpdate", getCurrentPrices()); batchEmitScheduled = false; });
   }
 };
 
-const uniqueSymbols = [...new Set(Object.values(watchlistMap))];
-
 const angelOne = new AngelOneService(
+  
   process.env.ANGEL_ONE_API_KEY,
   process.env.ANGEL_ONE_CLIENT_ID,
   process.env.ANGEL_ONE_PASSWORD,
@@ -744,119 +105,22 @@ const angelOne = new AngelOneService(
   uniqueSymbols,
   handleTradeUpdate,
   (status) => {
-    console.log(`[${new Date().toISOString()}] INFO: Angel One connection status changed to: ${status ? "CONNECTED" : "DISCONNECTED"}`);
-    isAngelOneConnected = status;
+    console.log(`[ANGEL_ONE] Status: ${status ? "CONNECTED" : "DISCONNECTED"}`);
+    setConnected(status);
     io.emit("connectionStatus", { isLive: status });
-    if (status) {
-      // Sync initial prices once connected
-      fetchInitialQuotes();
-    }
+    if (status) fetchInitialQuotes(angelOne);
   }
 );
+require("./services/angelOneInstance").setInstance(angelOne);
 
-// --- Hybrid Fallback & Heartbeat ---
-let dbSyncCounter = 0;
-
-setInterval(() => {
-  // 1. Always simulate Indices (NIFTY/SENSEX) as they are often restricted on free stock streams
-  ["NIFTY 50", "SENSEX"].forEach(ticker => {
-    const change = (Math.random() * 0.0002) - 0.0001;
-    currentPrices[ticker] = fromCents(toCents(currentPrices[ticker] * (1 + change)));
-  });
-
-  // 2. Resilience: If WS is down, resume simulation for all stocks
-  Object.keys(currentPrices).forEach((ticker) => {
-    if (ticker === "NIFTY 50" || ticker === "SENSEX") return;
-    
-    // Simulate if WS is down OR the specific stock hasn't moved in 30s (non-live symbol)
-    const lastUpdate = lastLiveUpdate[ticker] || 0;
-    if (!isAngelOneConnected || (Date.now() - lastUpdate > 30000)) {
-      const volatility = 0.001; 
-      const change = (Math.random() * volatility) - (volatility / 2);
-      currentPrices[ticker] = fromCents(toCents(currentPrices[ticker] * (1 + change)));
-    }
-  });
-  processPendingOrders();
-
-  io.emit("priceUpdate", currentPrices);
-
-  // Throttled DB Synchronization: Update holdings prices every 30 seconds (15 ticks)
-  // This ensures the DB reflects the "Last Known Price" for user sessions 
-  // without causing excessive write load on every individual trade event.
-  dbSyncCounter++;
-  if (dbSyncCounter >= 15) {
-    dbSyncCounter = 0;
-    Object.keys(currentPrices).forEach(ticker => {
-      if (ticker === "NIFTY 50" || ticker === "SENSEX") return;
-      HoldingsModel.updateMany({ name: ticker }, { $set: { price: currentPrices[ticker] } })
-        .catch(err => console.error(`[${new Date().toISOString()}] ERROR: Background DB sync failed for ${ticker}:`, err.message));
-    });
-  }
-}, 2000);
-
-io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-  // Send current Angel One status to the new user immediately
-  socket.emit("connectionStatus", { isLive: isAngelOneConnected });
-  // Send current prices immediately so the dashboard doesn't show hardcoded fallbacks
-  socket.emit("priceUpdate", currentPrices);
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-  });
+server.on("error", (e) => {
+  if (e.code === "EADDRINUSE") { console.error(`FATAL: Port ${PORT} in use`); process.exit(1); }
+  console.error("SERVER ERROR:", e.message);
 });
 
-server.on('error', (e) => {
-  if (e.code === 'EADDRINUSE') {
-    console.error(`[${new Date().toISOString()}] FATAL: Port ${PORT} is already in use. Use 'Stop-Process -Id (Get-NetTCPConnection -LocalPort ${PORT}).OwningProcess -Force' in PowerShell to free it.`);
-    process.exit(1);
-  }
-  console.error(`[${new Date().toISOString()}] SERVER ERROR:`, e.message);
-});
-
-server.listen(PORT, () => {
-  console.log(`[${new Date().toISOString()}] Server is running on port ${PORT}`);
-  
-  // Log all subscribed tokens for debugging
-  console.log(`[${new Date().toISOString()}] DEBUG: Token subscription map (${Object.keys(watchlistMap).length} stocks):`);
-  Object.entries(watchlistMap).forEach(([ticker, token]) => {
-    console.log(`  ${ticker.padEnd(15)} => ${token}`);
-  });
-  
-  // Start Angel One connection only after server is successfully bound to the port
-  console.log(`[${new Date().toISOString()}] INFO: Initializing Angel One with ${uniqueSymbols.length} unique tokens.`);
+server.listen(PORT, async () => {
+  console.log(`[${new Date().toISOString()}] Server running on port ${PORT}`);
   angelOne.connect();
-
-  if (!url) {
-    console.error(`[${new Date().toISOString()}] FATAL: MONGO_URL is not defined in .env file.`);
-    process.exit(1);
-  }
-
-  if (!tokenKey) {
-    console.error(`[${new Date().toISOString()}] FATAL: TOKEN_KEY is not defined in .env file. Login will fail.`);
-    process.exit(1);
-  }
-
-  mongoose.connect(url)
-    .then(async () => {
-      console.log("MongoDB connected successfully");
-      
-      try {
-        // One-time migration: set balance for existing users who don't have it
-        const result = await UserModel.updateMany(
-          { balance: { $exists: false } },
-          { $set: { balance: 100000 } }
-        );
-        if (result.modifiedCount > 0) {
-          console.log(`Migrated balance for ${result.modifiedCount} existing user(s).`);
-        }
-
-        // Optimize performance: Create compound index for order matching
-        await OrdersModel.collection.createIndex({ status: 1, name: 1 });
-        console.log("MongoDB Index created/verified for Orders collection (status, name).");
-      } catch (initErr) {
-        console.error("Error during database initialization:", initErr.message);
-      }
-    })
-    .catch(err => console.error("MongoDB connection error:", err.message));
+  startPriceSimulation(io, processPendingOrders, () => require("./services/angelOneState").isConnected());
+  await connectDB(url);
 });
