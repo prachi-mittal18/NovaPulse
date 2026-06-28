@@ -50,9 +50,9 @@ const Menu = () => {
   const handleSetPin = () => {
     const trimmedPin = newPin.trim();
     
-    if (!trimmedPin || trimmedPin.length < 4) {
-      return alert("PIN must be 4-6 digits.");
-    }
+    if (!trimmedPin || !/^\d{4,6}$/.test(trimmedPin)) {
+  return alert("PIN must be 4 to 6 digits only.");
+}
 
     setIsSavingPin(true);
 
@@ -198,8 +198,13 @@ const Menu = () => {
                     type="password" 
                     placeholder="Enter 4-6 digit PIN"
                     value={newPin}
-                    onChange={(e) => setNewPin(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (/^\d{0,6}$/.test(val)) setNewPin(val);
+                    }}
                     maxLength={6}
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     style={{ 
                       width: "100%", 
                       padding: "8px", 

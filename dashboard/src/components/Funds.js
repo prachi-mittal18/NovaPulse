@@ -118,9 +118,14 @@ const Funds = () => {
               <label style={{ fontSize: "12px", color: "#d32f2f", marginBottom: "4px", fontWeight: "bold" }}>Enter Trading PIN</label>
               <input 
                 type="password" 
-                maxLength="6"
+                maxLength={6}
                 value={pin} 
-                onChange={(e) => setPin(e.target.value)}
+                onChange={(e) => {
+                    const val = e.target.value;
+                    if (/^\d{0,6}$/.test(val)) setPin(val);
+                }}
+                inputMode="numeric"
+                pattern="[0-9]*"
                 style={{ padding: "8px", borderRadius: "4px", border: "1px solid #d32f2f", width: "120px", letterSpacing: "4px" }}
               />
             </div>

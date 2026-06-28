@@ -1,5 +1,3 @@
-// backend/index.js  ← NOW ONLY ~70 LINES
-
 require("dotenv").config();
 
 // Normalize .env keys/values (handles accidental spaces)
