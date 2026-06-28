@@ -40,6 +40,7 @@ const PrivateRoute = () => {
   }
 
   // Not authenticated: redirect to the landing page (signup/login) served by the frontend (port 3001)
+  localStorage.removeItem("np_token");
   window.location.href = process.env.REACT_APP_FRONTEND_URL || "http://localhost:3001/";
   return null;
 };

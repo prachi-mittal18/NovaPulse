@@ -5,12 +5,22 @@ const { UserModel } = require("../model/UserModel");
  * Middleware to verify the JWT token stored in an httpOnly cookie.
  */
 module.exports.userVerification = (req, res, next) => {
-  const token = req.cookies.token;
 
-  if (!token) {
-    console.warn(`[${new Date().toISOString()}] Auth Warning: No token cookie found in request to ${req.path}`);
-    return res.status(401).json({ status: false, message: "No token provided" });
-  }
+
+
+
+let token = null;
+const authHeader = req.headers["authorization"];
+if (authHeader && authHeader.startsWith("Bearer ")) {
+  token = authHeader.slice(7);
+} else {
+  token = req.cookies.token;
+}
+
+if (!token) {
+  console.warn(`[${new Date().toISOString()}] Auth Warning: No token cookie found in request to ${req.path}`)
+  return res.status(401).json({ status: false, message: "No token provided" });
+}
 
   jwt.verify(token, process.env.TOKEN_KEY, async (err, data) => {
     if (err) {

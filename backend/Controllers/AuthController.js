@@ -34,7 +34,7 @@ module.exports.Signup = async (req, res, next) => {
     delete userResponse.password;
     return res
       .status(201)
-      .json({ message: "User signed in successfully", success: true, user: userResponse });
+      .json({ message: "User signed in successfully", success: true, user: userResponse, token });
   } catch (error) {
     console.error(`[${new Date().toISOString()}] Signup Error:`, error.message);
     return res.status(500).json({ message: "Internal Server Error", success: false });
@@ -72,7 +72,8 @@ module.exports.Login = async (req, res, next) => {
       });
        return res.status(200).json({ 
          message: "User logged in successfully", 
-         success: true
+         success: true,
+         token
        });
     } catch (error) {
       console.error(`[${new Date().toISOString()}] Login Error:`, error.message);

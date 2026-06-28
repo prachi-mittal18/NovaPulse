@@ -40,6 +40,7 @@ const Signup = () => {
       );
       const { success, message } = data;
       if (success) {
+         if (data.token) localStorage.setItem("np_token", data.token);
         handleSuccess(message);
         setTimeout(() => {
           window.location.href = process.env.REACT_APP_DASHBOARD_URL || "http://localhost:3000";

@@ -10,6 +10,14 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("np_token");
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // 2. Response Interceptor: Handle global errors like 401 Unauthorized
 api.interceptors.response.use(
   (response) => {

@@ -9,6 +9,14 @@ const api = axios.create({
   },
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("np_token");
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -16,6 +24,7 @@ api.interceptors.response.use(
       const { status } = error.response;
       if (status === 401) {
         console.warn("Unauthorized! Redirecting to login portal...");
+        localStorage.removeItem("np_token");
         // Redirect dashboard to frontend auth portal
         window.location.href = process.env.REACT_APP_FRONTEND_URL || "http://localhost:3001/";
       }

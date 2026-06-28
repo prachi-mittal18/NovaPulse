@@ -42,6 +42,7 @@ const Menu = () => {
       .post("/logout")
       .then(() => {
         // Redirect to the main landing page/auth portal on port 3001
+        localStorage.removeItem("np_token");
        window.location.href = process.env.REACT_APP_FRONTEND_URL || "http://localhost:3001/";
       })
       .catch((err) => console.error("Logout failed", err));
